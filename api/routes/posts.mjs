@@ -4,13 +4,13 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { q, tx } from "../db.mjs";
 import { requireUser } from "../auth.mjs";
-import { str, tags, oneOf, int, bad } from "../validate.mjs";
+import { str, tags, oneOf, int, bad, url } from "../validate.mjs";
 
 export const STAGES = ["idea", "recruiting", "active", "closed"];
 const posts = new Hono();
 
 const POST = `
-  t.id, t.title, t.stage, t.commitment, t.description, t.tags, t.created_at, t.updated_at,
+  t.id, t.title, t.stage, t.commitment, t.description, t.tags, t.cover_url, t.created_at, t.updated_at,
   t.owner_id, u.display_name as owner_name, u.avatar_url as owner_avatar, u.school as owner_school,
   coalesce((select json_agg(json_build_object('id', r.id, 'name', r.name, 'needed', r.needed, 'filled', r.filled) order by r.position)
             from team_roles r where r.post_id = t.id), '[]'::json) as roles`;
@@ -54,13 +54,14 @@ posts.post("/", async (c) => {
   const commitment = str(b.commitment, "commitment", { max: 60 });
   const description = str(b.description, "description", { max: 1000 });
   const postTags = tags(b.tags);
+  const coverUrl = url(b.coverUrl, "coverUrl");
   const roles = parseRoles(b.roles);
 
   const id = await tx(async (db) => {
     const { rows } = await db.query(
-      `insert into team_posts (owner_id, title, stage, commitment, description, tags)
-       values ($1, $2, $3, $4, $5, $6) returning id`,
-      [user.id, title, stage, commitment, description, postTags]
+      `insert into team_posts (owner_id, title, stage, commitment, description, tags, cover_url)
+       values ($1, $2, $3, $4, $5, $6, $7) returning id`,
+      [user.id, title, stage, commitment, description, postTags, coverUrl]
     );
     for (const [i, r] of roles.entries()) {
       await db.query(`insert into team_roles (post_id, position, name, needed, filled) values ($1, $2, $3, $4, $5)`, [rows[0].id, i, r.name, r.needed, r.filled]);
@@ -88,7 +89,8 @@ posts.patch("/:id", async (c) => {
   const commitment = b.commitment === undefined ? post.commitment : str(b.commitment, "commitment", { max: 60 });
   const description = b.description === undefined ? post.description : str(b.description, "description", { max: 1000 });
   const postTags = b.tags === undefined ? post.tags : tags(b.tags);
-  await q(`update team_posts set title=$2, stage=$3, commitment=$4, description=$5, tags=$6, updated_at=now() where id=$1`, [post.id, title, stage, commitment, description, postTags]);
+  const coverUrl = b.coverUrl === undefined ? post.cover_url : url(b.coverUrl, "coverUrl");
+  await q(`update team_posts set title=$2, stage=$3, commitment=$4, description=$5, tags=$6, cover_url=$7, updated_at=now() where id=$1`, [post.id, title, stage, commitment, description, postTags, coverUrl]);
   return c.json(await loadPost(post.id));
 });
 

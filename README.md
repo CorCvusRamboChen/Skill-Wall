@@ -41,7 +41,7 @@ JWT secret（或 JWKS）验签，首次见到就建一行 `users`。
 | GET | `/profiles/tags` | 标签云 |
 | GET | `/profiles/:slug` | 一张名片（含 content） |
 | GET | `/posts?stage=&tag=&q=` | 招募帖（默认不含 closed） |
-| POST | `/posts` | 发帖：title, stage, commitment, description, tags, roles[{name, needed}] |
+| POST | `/posts` | 发帖：title, stage, commitment, description, tags, coverUrl(可选 http(s) 图片), roles[{name, needed}] |
 | GET | `/posts/:id` | 一帖 |
 | PATCH | `/posts/:id` | 改帖 / 关帖（仅发起人） |
 | POST | `/posts/:id/apply` | 申请：roleId, message |
