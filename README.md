@@ -64,6 +64,15 @@ curl -H "Authorization: Bearer $(npm run -s dev:token)" http://localhost:8787/me
 
 `npm test` 跑不依赖数据库的鉴权测试；`npm run check` 只做语法检查。
 
+## 试运营样例数据
+
+`db/seed-demo.sql` 是设计稿里那 8 张名片、5 条招募帖，挂在 `realm = 'demo'` 下（没有任何墙会签这个 realm 的 token，所以登不进去）。
+
+```bash
+docker compose exec -T db psql -U skillwall -d skillwall -f - < db/seed-demo.sql   # 幂等，重跑即替换
+docker compose exec -T db psql -U skillwall -d skillwall -c "delete from users where realm = 'demo'"   # 一句清掉
+```
+
 ## 部署
 
 见 [deploy/DEPLOY.md](deploy/DEPLOY.md)。落点是 forum-app，各校 nginx 加一段
