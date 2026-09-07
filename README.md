@@ -25,6 +25,10 @@ web/            独立站前端，待建
 `X-Wall-School: anu` 之类说明是哪所。API 按 JWT 的 `iss` 找到 realm，用它的
 JWT secret（或 JWKS）验签，首次见到就建一行 `users`。
 
+**issuer 必须照 GoTrue 实际签的填**：两套自建栈都设了 `GOTRUE_JWT_ISSUER` 为裸主机
+（`https://api.talkwalll.com` / `https://api.monashwall.com`，没有 `/auth/v1`），
+对不上就是一片 401（`docker compose logs api` 里会打 `auth reject: unknown_issuer iss=…`）。
+
 ## API
 
 | 方法 | 路径 | 说明 |

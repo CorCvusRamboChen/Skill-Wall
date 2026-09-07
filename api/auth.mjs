@@ -78,6 +78,19 @@ export async function upsertUser(realm, payload, schoolHeader) {
   return rows[0];
 }
 
+// iss/alg/role/exp of a token for the reject log — claims only, no signature,
+// and never the token itself.
+function describeToken(token) {
+  try {
+    const [h, p] = token.split(".");
+    const dec = (x) => JSON.parse(Buffer.from(x.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"));
+    const header = dec(h), claims = dec(p);
+    return `alg=${header.alg} kid=${header.kid || "-"} iss=${claims.iss} role=${claims.role} aud=${claims.aud} exp=${claims.exp ? new Date(claims.exp * 1000).toISOString() : "-"}`;
+  } catch {
+    return "(undecodable)";
+  }
+}
+
 // Optional auth on every route: no header → anonymous; a bad header → 401.
 export function authMiddleware() {
   return async (c, next) => {
@@ -90,7 +103,13 @@ export function authMiddleware() {
       const { realm, payload } = await verifyWallToken(h.slice(7).trim());
       c.set("user", await upsertUser(realm, payload, c.req.header("x-wall-school")));
     } catch (e) {
-      if (e instanceof AuthError) return c.json({ error: e.code }, 401);
+      if (e instanceof AuthError) {
+        // The reason is logged (never the token) so a realm misconfiguration —
+        // wrong issuer, rotated secret, asymmetric keys — is visible in
+        // `docker compose logs api` instead of only as a bare 401 in nginx.
+        console.warn(`auth reject: ${e.code} ${describeToken(h.slice(7).trim())}`);
+        return c.json({ error: e.code }, 401);
+      }
       throw e;
     }
     await next();
