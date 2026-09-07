@@ -1,0 +1,24 @@
+{
+  "name": "skill-wall",
+  "version": "0.1.0",
+  "private": true,
+  "description": "技能墙 Skill Wall — cross-school portfolio + team-up service, consumed by the campus walls through /skillwall/",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node api/server.mjs",
+    "dev": "node --watch api/server.mjs",
+    "migrate": "node scripts/migrate.mjs",
+    "check": "node --check api/server.mjs && node --check api/app.mjs && node --check api/auth.mjs && node --check api/db.mjs && node --check api/config.mjs && node --check api/validate.mjs && node --check api/routes/me.mjs && node --check api/routes/profiles.mjs && node --check api/routes/posts.mjs && node --check scripts/migrate.mjs && node --check scripts/mint-dev-token.mjs",
+    "test": "node --test",
+    "dev:token": "node scripts/mint-dev-token.mjs"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.14",
+    "jose": "^5.9.6",
+    "pg": "^8.13.1"
+  }
+}

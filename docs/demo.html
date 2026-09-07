@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>技能墙 Skill Wall</title>
+<style>
+  /* Tokens lifted from src/config/tenants/unimelb.js palette + src/styles/tokens.css,
+     so this page renders in the same ink as the live site. */
+  :root {
+    --brand: #000b34;
+    --brand-deep: #000927;
+    --brand-bright: #0a4db3;
+    --brand-weak: #e8eef8;
+    --sidebar-brand: #000f46;
+    --sidebar-brand-deep: #000b34;
+    --canvas: #f5f7fb;
+    --surface: #ffffff;
+    --surface-muted: #f0f2f6;
+    --surface-2: #f8fafc;
+    --line: #e4e8ef;
+    --line-strong: #d9dfeb;
+    --text: #20242c;
+    --muted: #687082;
+    --soft: #8a93a6;
+    --ink-strong: #000b34;
+    --count-ink: #3a4a7a;
+    --button-bg: #000b34;
+    --button-ink: #ffffff;
+    --marker: #f9f5a2;
+    --marker-ink: #2a2600;
+    --open: #1c7f5f;
+    --open-weak: #e2f3ec;
+    --shadow-card: 0 1px 2px rgba(0, 11, 52, .06);
+    --shadow-lift: 0 6px 18px rgba(0, 11, 52, .12);
+    --radius-ui: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-card: 14px;
+    --sidebar-width: 264px;
+    --topbar-height: 68px;
+    --sans: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --brand: #7fb0ee; --brand-deep: #a9c9f5; --brand-bright: #7fb0ee; --brand-weak: rgba(10, 77, 179, .28);
+      --sidebar-brand: #0b0e16; --sidebar-brand-deep: #06080d;
+      --canvas: #16181c; --surface: #181a1b; --surface-muted: #232323; --surface-2: #232323;
+      --line: #3d3d3d; --line-strong: #444444;
+      --text: #e8e8e8; --muted: rgba(255,255,255,.6); --soft: rgba(255,255,255,.3);
+      --ink-strong: #ffffff; --count-ink: #c9d3ee;
+      --button-bg: #7fb0ee; --button-ink: #0b0e16;
+      --marker: #cdbf2a; --marker-ink: #1a1600;
+      --open: #4cc59a; --open-weak: #16352b;
+      --shadow-card: 0 1px 2px rgba(0,0,0,.4); --shadow-lift: 0 6px 18px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --brand: #7fb0ee; --brand-deep: #a9c9f5; --brand-bright: #7fb0ee; --brand-weak: rgba(10, 77, 179, .28);
+    --sidebar-brand: #0b0e16; --sidebar-brand-deep: #06080d;
+    --canvas: #16181c; --surface: #181a1b; --surface-muted: #232323; --surface-2: #232323;
+    --line: #3d3d3d; --line-strong: #444444;
+    --text: #e8e8e8; --muted: rgba(255,255,255,.6); --soft: rgba(255,255,255,.3);
+    --ink-strong: #ffffff; --count-ink: #c9d3ee;
+    --button-bg: #7fb0ee; --button-ink: #0b0e16;
+    --marker: #cdbf2a; --marker-ink: #1a1600;
+    --open: #4cc59a; --open-weak: #16352b;
+    --shadow-card: 0 1px 2px rgba(0,0,0,.4); --shadow-lift: 0 6px 18px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--brand-bright); outline-offset: 2px; }
+
+  /* ---------- App shell (mirrors .sidebar / .topbar in app.css) ---------- */
+  .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: var(--sidebar-width); display: flex; flex-direction: column; gap: 16px; padding: 0 14px 18px; background: var(--sidebar-brand); border-right: 1px solid var(--sidebar-brand-deep); color: #fff; }
+  .brand-block { display: flex; align-items: center; gap: 10px; height: var(--topbar-height); padding: 0 6px; }
+  .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: var(--radius-ui); font-size: 24px; font-weight: 700; line-height: 1; }
+  .brand-block strong { display: block; font-size: 17px; font-weight: 800; }
+  .brand-block span { display: block; font-size: 11px; opacity: .7; }
+  .nav { display: flex; flex-direction: column; gap: 4px; }
+  .nav-item { width: 100%; min-height: 38px; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-radius: var(--radius-ui); background: transparent; color: #fff; font-size: 14px; font-weight: 600; text-align: left; }
+  .nav-item > span:first-child { width: 18px; flex: 0 0 18px; display: inline-grid; place-items: center; font-size: 13px; }
+  .nav-item:hover { background: rgba(255,255,255,.08); }
+  .nav-item.is-active { background: #ffffff; color: var(--sidebar-brand); }
+  .nav-item .new { margin-left: auto; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 999px; background: var(--marker); color: var(--marker-ink); }
+  .nav-divider { height: 1px; background: rgba(255,255,255,.14); margin: 4px 0; }
+  .section-label { font-size: 12px; opacity: .6; padding: 0 10px; }
+  .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+  .sidebar-foot .login { background: transparent; border: 0; color: #fff; font-weight: 800; font-size: 15px; text-align: left; padding: 8px 10px; }
+  .sidebar-foot .feedback { border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-ui); background: rgba(255,255,255,.04); color: #fff; font-size: 12px; padding: 8px 10px; text-align: left; }
+
+  .topbar { position: fixed; inset: 0 0 auto var(--sidebar-width); z-index: 20; height: var(--topbar-height); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 10px 28px; background: var(--sidebar-brand); border-bottom: 1px solid var(--sidebar-brand-deep); color: #fff; }
+  .topbar-search { grid-column: 2; width: min(460px, 40vw); height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: var(--radius-ui); background: #fff; color: #687082; font-size: 13px; }
+  .topbar-right { grid-column: 3; justify-self: end; display: flex; gap: 8px; }
+  .topbar-right button { height: 30px; padding: 0 10px; border: 1px solid rgba(255,255,255,.3); border-radius: var(--radius-ui); background: transparent; color: #fff; font-size: 12px; font-weight: 700; }
+
+  .app-main { margin-left: var(--sidebar-width); padding: calc(var(--topbar-height) + 20px) 28px 60px; min-height: 100vh; }
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .topbar { left: 0; grid-template-columns: 1fr auto; }
+    .topbar-search { grid-column: 1; width: 100%; }
+    .topbar-right { grid-column: 2; }
+    .app-main { margin-left: 0; padding-left: 14px; padding-right: 14px; }
+  }
+
+  /* ---------- Board tab strip (mirrors .board-tabs / .tab-pill) ---------- */
+  .board-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .board-tabs { min-width: 0; flex: 1; display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-ui); background: var(--surface); scrollbar-width: none; }
+  .tab-pill { flex: 0 0 auto; min-height: 28px; padding: 0 11px; border: 0; border-radius: var(--radius-ui); background: transparent; color: var(--text); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .tab-pill:hover { background: var(--surface-muted); }
+  .tab-pill.is-active { background: var(--brand-weak); color: var(--brand); }
+  .tab-pill .n { font-size: 11px; font-weight: 800; color: var(--count-ink); background: var(--surface-muted); padding: 0 6px; border-radius: 999px; }
+  .tab-pill.is-active .n { background: rgba(255,255,255,.7); }
+  :root[data-theme="dark"] .tab-pill.is-active .n { background: rgba(0,0,0,.3); }
+  .primary-button { flex: 0 0 auto; min-height: 32px; padding: 0 12px; border: 0; border-radius: var(--radius-ui); background: var(--button-bg); color: var(--button-ink); font-weight: 700; font-size: 13px; }
+  .primary-button:hover { filter: brightness(1.15); }
+  .ghost-button { min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-ui); background: var(--surface); color: var(--text); font-weight: 600; font-size: 13px; }
+  .ghost-button:hover { background: var(--surface-muted); }
+  .sm { min-height: 28px; font-size: 12.5px; padding: 0 10px; }
+
+  /* ---------- Page head ---------- */
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .page-head h1 { margin: 0; font-size: 22px; font-weight: 800; color: var(--ink-strong); letter-spacing: -.01em; }
+  .page-head h1 .beta { margin-left: 8px; vertical-align: 3px; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 999px; background: var(--brand-weak); color: var(--brand); }
+  .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; max-width: 60ch; }
+
+  /* ---------- Filters ---------- */
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .chip { min-height: 26px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 600; }
+  .chip:hover { border-color: var(--line-strong); color: var(--text); }
+  .chip.is-active { background: var(--ink-strong); border-color: var(--ink-strong); color: var(--surface); }
+  :root[data-theme="dark"] .chip.is-active { color: #0b0e16; }
+  .chip.marker { background: var(--marker); border-color: var(--marker); color: var(--marker-ink); }
+  .chip.marker.off { background: var(--surface); border-color: var(--line); color: var(--muted); }
+  .filters .spacer { flex: 1; }
+  .filters .search { min-height: 30px; width: 220px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-ui); background: var(--surface); color: var(--text); font-size: 13px; }
+
+  /* ---------- Layout: board + right pane (like .campus-info-layout) ---------- */
+  .board { max-width: 1180px; }
+  .column-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 12px; }
+  .column-head h2 { margin: 0; font-size: 16px; font-weight: 800; color: var(--ink-strong); }
+  .count { min-width: 24px; padding: 1px 8px; border-radius: 999px; background: var(--brand-weak); color: var(--count-ink); font-size: 12px; font-weight: 800; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+  .empty { grid-column: 1 / -1; color: var(--muted); padding: 36px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--radius-card); background: var(--surface); }
+
+  /* ---------- Person card (mirrors .campus-event-card) ---------- */
+  .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); box-shadow: var(--shadow-card); transition: transform .15s ease, box-shadow .15s ease; }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+  .who { display: flex; gap: 10px; align-items: center; padding-right: 76px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 16px; color: #fff; flex: none; }
+  .name { font-weight: 800; font-size: 15px; color: var(--ink-strong); }
+  .prog { color: var(--muted); font-size: 12px; }
+  .pitch { margin: 0; font-size: 13px; color: var(--text); }
+  .tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-muted); color: var(--text); }
+  .open-mark { position: absolute; top: 14px; right: 14px; padding: 2px 8px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-size: 11px; font-weight: 800; }
+  .thumb { display: block; width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-muted); aspect-ratio: 16/8; position: relative; text-align: left; overflow: hidden; }
+  .thumb .site { position: absolute; left: 8px; bottom: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); background: var(--surface); padding: 1px 6px; border-radius: 3px; }
+  .links { display: flex; gap: 10px; font-size: 11.5px; color: var(--soft); }
+  .foot { display: flex; gap: 6px; margin-top: auto; }
+  .foot .ghost-button:first-child { flex: 1; }
+
+  /* ---------- Project card ---------- */
+  .proj { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); box-shadow: var(--shadow-card); }
+  @media (max-width: 640px) { .proj { grid-template-columns: 1fr; } }
+  .proj h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--ink-strong); }
+  .stage { padding: 3px 10px; border-radius: 999px; background: var(--ink-strong); color: #fff; font-size: 11px; font-weight: 800; }
+  :root[data-theme="dark"] .stage { color: #0b0e16; }
+  .stage.open { background: var(--open); color: #fff; }
+  .stage.idea { background: var(--brand-weak); color: var(--brand); }
+  .proj .meta { margin-top: 6px; color: var(--muted); font-size: 12.5px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .proj .meta b { color: var(--brand-bright); font-weight: 700; }
+  .proj p { margin: 8px 0 10px; font-size: 13px; max-width: 64ch; }
+  .roles { display: flex; flex-direction: column; gap: 6px; border-left: 1px solid var(--line); padding-left: 16px; }
+  @media (max-width: 640px) { .roles { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 12px; } }
+  .roles .h { font-size: 11px; font-weight: 800; color: var(--soft); letter-spacing: .04em; }
+  .role { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .role .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--open); margin-right: 7px; }
+  .role.full { color: var(--soft); text-decoration: line-through; }
+  .role.full .dot { background: var(--line-strong); }
+  .role .cnt { font-family: var(--mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .apply { margin-top: auto; }
+  .ok { color: var(--open); font-weight: 700; font-size: 12.5px; }
+
+  /* Mini previews drawn with divs, scaled down. Kept single-theme (a webpage
+     thumbnail is white paper whatever the host theme). */
+  .mini { width: 100%; height: 100%; background: #fff; color: #1a1a1a; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.15); overflow: hidden; font-size: 8px; line-height: 1.3; }
+  .mini.cv { padding: 14px 16px; }
+  .mini.cv .nm { font-size: 13px; font-weight: 800; }
+  .mini.cv .ln { height: 5px; background: #e6e6e6; border-radius: 2px; margin: 4px 0; }
+  .mini.cv .sec { font-family: var(--mono); font-size: 6.5px; letter-spacing: .1em; color: #888; margin-top: 8px; }
+  .mini.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; background: #111; }
+  .mini.gal div { border-radius: 2px; }
+  .mini.dev { display: grid; grid-template-columns: 62px 1fr; }
+  .mini.dev .side { background: #0d1117; color: #c9d1d9; padding: 10px 8px; font-family: var(--mono); font-size: 6.5px; }
+  .mini.dev .side .av { width: 26px; height: 26px; border-radius: 50%; background: #58a6ff; margin-bottom: 6px; }
+  .mini.dev .main { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; align-content: start; }
+  .mini.dev .main div { border: 1px solid #aeb7c4; background: #eef1f5; border-radius: 3px; height: 26px; padding: 3px 4px; font-family: var(--mono); font-size: 7px; color: #222; }
+
+  /* ---------- Modal (mirrors site modals: 12px radius, line header) ---------- */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(0, 11, 52, .45); }
+  .modal { width: min(760px, 100%); max-height: 90vh; overflow: auto; border-radius: var(--radius-md); background: var(--surface); color: var(--text); box-shadow: var(--shadow-lift); }
+  .mh { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .mh h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--ink-strong); }
+  .x { border: 0; background: none; font-size: 20px; line-height: 1; color: var(--muted); }
+  .mb { padding: 20px; }
+  .form { display: grid; gap: 14px; }
+  .form label { display: grid; gap: 5px; font-size: 12.5px; color: var(--muted); }
+  .form input, .form textarea { padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-ui); background: var(--surface-2); color: var(--text); }
+  .form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form .tplpick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .form .tplpick button { display: grid; gap: 6px; padding: 8px; border: 2px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); font-size: 12.5px; font-weight: 700; text-align: left; }
+  .form .tplpick button .prev { aspect-ratio: 16/10; padding: 8px; background: var(--surface-muted); border-radius: 4px; }
+  .form .tplpick button small { display: block; color: var(--muted); font-weight: 400; font-size: 11.5px; }
+  .form .tplpick button.on { border-color: var(--brand-bright); }
+  .form .tplhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12.5px; color: var(--muted); }
+  .form .checks { display: flex; gap: 16px; font-size: 13px; }
+  .form .checks label { flex-direction: row; display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .form .actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  .full { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: #fff; color: #1a1a1a; }
+  .full .bar { padding: 6px 12px; border-bottom: 1px solid #dfe2e7; background: #eef0f3; color: #666; font-family: var(--mono); font-size: 11px; }
+  .full .cv { padding: 28px 32px; max-width: 560px; }
+  .full .cv h2 { margin: 0; font-size: 24px; font-weight: 800; }
+  .full .cv .sub { margin: 2px 0 16px; color: #666; }
+  .full .cv h5 { margin: 18px 0 6px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: #888; text-transform: uppercase; }
+  .full .cv ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .full .cv .tag { background: #f0f2f6; color: #20242c; }
+  .full .gal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px; background: #111; }
+  .full .gal div { aspect-ratio: 1; display: grid; place-items: end start; padding: 8px; border-radius: 4px; color: #fff; font-family: var(--mono); font-size: 10px; }
+  .full .gal .wide { grid-column: span 2; aspect-ratio: auto; }
+  .full .dev { display: grid; grid-template-columns: 200px 1fr; }
+  .full .dev .side { padding: 24px 18px; background: #0d1117; color: #c9d1d9; font-family: var(--mono); font-size: 12px; line-height: 1.7; }
+  .full .dev .side .av { width: 64px; height: 64px; border-radius: 50%; background: #58a6ff; margin-bottom: 10px; }
+  .full .dev .main { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding: 24px; }
+  .full .dev .main div { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 12.5px; }
+  .full .dev .main div b { display: block; margin-bottom: 4px; color: #0969da; font-family: var(--mono); }
+
+  .toast { position: fixed; left: 50%; bottom: 28px; z-index: 60; transform: translateX(-50%); padding: 9px 16px; border-radius: var(--radius-ui); background: var(--ink-strong); color: #fff; font-size: 13px; font-weight: 600; box-shadow: var(--shadow-lift); }
+  :root[data-theme="dark"] .toast { color: #0b0e16; }
+  @media (prefers-reduced-motion: reduce) { .card, .sw, .sw::after { transition: none; } }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" aria-label="导航">
+  <div class="brand-block"><div class="brand-mark">墨</div><div><strong>墨大墙</strong><span>墨大学生论坛</span></div></div>
+  <nav class="nav">
+    <button class="nav-item"><span>⌂</span>首页</button>
+    <button class="nav-item"><span>★</span>课程评价</button>
+    <button class="nav-item"><span>i</span>校园信息</button>
+    <div class="nav-divider"></div>
+    <button class="nav-item"><span>▣</span>游戏组队</button>
+    <button class="nav-item"><span>✦</span>社团</button>
+    <button class="nav-item"><span>▧</span>海报</button>
+    <button class="nav-item is-active"><span>◆</span>技能墙<span class="new">试运营</span></button>
+  </nav>
+  <div class="section-label">关注标签</div>
+  <div class="sidebar-foot">
+    <button class="login">登录 / 注册</button>
+    <button class="feedback">▤ 意见反馈</button>
+  </div>
+</aside>
+<header class="topbar">
+  <div class="topbar-search">🔍 搜技能、专业、项目…</div>
+  <div class="topbar-right"><button aria-label="切换主题">☾</button><button>⊕ 中文</button></div>
+</header>
+<main class="app-main" id="app"></main>
+
+<script>
+const tplList = [
+  { id:'cv', name:'极简履历', forWho:'一页纸讲清楚你是谁、做过什么。适合找实习、给面试官发链接。', used: 128 },
+  { id:'gal', name:'作品画廊', forWho:'大图优先，深色底。适合设计、插画、摄影、建筑。', used: 87 },
+  { id:'dev', name:'开发者主页', forWho:'项目卡片 + 技术栈 + GitHub 链接。适合写代码的同学。', used: 143 }
+];
+let people = [
+  { id:1, name:'林一舟', prog:'Master of IT · 2 年级', pitch:'做过两个上线的小程序，最近在学 Rust。想找人一起做校园工具。', tags:['React','Node','TypeScript'], open:true, friend:true, tpl:'dev', site:'yizhou.dev', color:'#0a4db3', links:['GitHub','小红书'] },
+  { id:2, name:'Chloe Wen', prog:'Bachelor of Design · 3 年级', pitch:'品牌与包装方向，作品集刚重做一遍，欢迎来挑刺。', tags:['Figma','插画','UI'], open:true, friend:true, tpl:'gal', site:'chloewen.site', color:'#7b4fd1', links:['Behance','Instagram'] },
+  { id:3, name:'赵思远', prog:'BSc Data Science · 2 年级', pitch:'Kaggle 铜牌一枚。会画图会讲故事，缺一个前端搭档。', tags:['Python','数据分析','SQL'], open:true, friend:false, tpl:'cv', site:'siyuan.notion.site', color:'#1c7f5f', links:['GitHub','LinkedIn'] },
+  { id:4, name:'Ethan Ma', prog:'Master of Architecture · 1 年级', pitch:'Rhino + Grasshopper 参数化，也接效果图。周末想找乐队。', tags:['Rhino','建模','吉他'], open:false, friend:true, tpl:'gal', site:'ethanma.cargo.site', color:'#5b6b8c', links:['Instagram'] },
+  { id:5, name:'许晚晴', prog:'Bachelor of Arts (Media) · 3 年级', pitch:'跑过三档校园播客，剪辑和采访都行。想做一档留学生访谈。', tags:['剪辑','写作','公众号'], open:true, friend:true, tpl:'cv', site:'wanqing.me', color:'#b8741a', links:['小红书','bilibili'] },
+  { id:6, name:'Kevin Zhou', prog:'Master of Engineering (Software) · 2 年级', pitch:'iOS 开发，做过一个上架的日语学习 app。Unihack 找队友。', tags:['Swift','Flutter','产品'], open:true, friend:false, tpl:'dev', site:'kevinzhou.app', color:'#c94f2b', links:['GitHub','App Store'] },
+  { id:7, name:'唐宁', prog:'Bachelor of Commerce · 2 年级', pitch:'想转产品。会写 PRD、画原型，缺一个能把它做出来的人。', tags:['产品','Figma','写作'], open:true, friend:true, tpl:'cv', site:'tangning.notion.site', color:'#0e7490', links:['LinkedIn'] },
+  { id:8, name:'Mia Liu', prog:'Bachelor of Music · 1 年级', pitch:'声乐 + 编曲，接活动演出，也想找人一起做游戏配乐。', tags:['声乐','吉他','剪辑'], open:false, friend:true, tpl:'gal', site:'mialiu.bandcamp.com', color:'#b0306a', links:['bilibili','网易云'] }
+];
+let projects = [
+  { id:1, title:'墨大二手教材交换小程序', by:'林一舟', stage:'已开工', when:'到 11 月底 · 每周 2 次线上', desc:'解决每学期教材贵、买了用一次的问题。已有原型和 30 个种子用户，缺后端和运营。', tags:['React','Node','产品'], roles:[['前端',1,1],['后端',0,1],['运营/推广',0,2]], applied:false },
+  { id:2, title:'Unihack 2026 组队', by:'Kevin Zhou', stage:'找人中', when:'黑客松周末 · 10 月 18–19', desc:'去年进了决赛，今年想冲奖。方向偏 AI 工具，已经有两个开发，缺设计和一个会讲的人。', tags:['Swift','Figma','产品'], roles:[['开发',2,2],['UI/UX',0,1],['Pitch / PM',0,1]], applied:false },
+  { id:3, title:'留学生访谈播客《墨尔本夜话》', by:'许晚晴', stage:'找人中', when:'双周更 · 长期', desc:'每期请一位在墨尔本做有意思事情的中国学生。有设备有剪辑，缺一个搭档主持和一个做封面的。', tags:['剪辑','写作','插画'], roles:[['联合主持',0,1],['封面/视觉',0,1]], applied:false },
+  { id:4, title:'毕设：AR 校园导览', by:'Ethan Ma', stage:'想法', when:'2027 S1 · 可算学分', desc:'把 Parkville 校区做成可交互 AR 地图。建筑背景，想找 Unity 或 Swift 的人一起把它变成能装的 app。', tags:['Unity','Swift','建模'], roles:[['Unity / AR 开发',0,1],['3D 建模',1,2]], applied:false },
+  { id:5, title:'校园活动数据看板', by:'赵思远', stage:'已开工', when:'到期末 · 松散', desc:'把墨大墙的活动数据拿来做可视化：哪些社团最活跃、哪天活动最多。数据已清好，缺前端做交互图。', tags:['Python','数据分析','React'], roles:[['数据',1,1],['前端 / D3',0,1]], applied:false }
+];
+let tab = 'people', filterTag = null, onlyOpen = false, q = '';
+let me = { open: true, friend: true, tpl: 'dev' };
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const allTags = () => [...new Set(people.flatMap(p => p.tags))];
+
+function miniPreview(tpl, color) {
+  if (tpl === 'cv') return `<div class="mini cv"><div class="nm">姓名 Name</div><div class="ln" style="width:60%"></div><div class="sec">EXPERIENCE</div><div class="ln"></div><div class="ln" style="width:85%"></div><div class="sec">PROJECTS</div><div class="ln"></div><div class="ln" style="width:70%"></div></div>`;
+  if (tpl === 'gal') { const c = color || '#7b4fd1'; return `<div class="mini gal">${['#e06f8b','#f4c95d',c,'#4b8bbe','#2fbf9f','#f08a4b'].map(x=>`<div style="background:${x};aspect-ratio:1"></div>`).join('')}</div>`; }
+  return `<div class="mini dev"><div class="side"><div class="av"></div>@handle<br>Melbourne<br>MIT · 2Y</div><div class="main"><div>campus-swap</div><div>rust-notes</div><div>timetable-cli</div><div>wall-bot</div></div></div>`;
+}
+function fullPreview(tpl, p) {
+  const name = p ? p.name : '你的名字', site = p ? p.site : 'unimelbwall.com/p/yourname';
+  const bar = `<div class="bar">https://${esc(site)}</div>`;
+  if (tpl === 'cv') return `<div class="full">${bar}<div class="cv"><h2>${esc(name)}</h2><div class="sub">${esc(p ? p.prog : 'University of Melbourne')} · Melbourne</div><h5>About</h5><div style="font-size:13.5px">${esc(p ? p.pitch : '一句话介绍你自己。')}</div><h5>Projects</h5><ul><li>墨大二手教材交换小程序 · 2026</li><li>校园活动数据看板 · 2026</li></ul><h5>Skills</h5><div class="tags">${(p ? p.tags : ['React','Python']).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><h5>Contact</h5><div style="font-family:var(--mono);font-size:12px">${esc(site)} · 墨大墙 @${esc(name)}</div></div></div>`;
+  if (tpl === 'gal') return `<div class="full">${bar}<div class="gal"><div class="wide" style="background:linear-gradient(135deg,${p?p.color:'#7b4fd1'},#222)">${esc(name)} · Portfolio</div><div style="background:#e06f8b">01 品牌</div><div style="background:#f4c95d;color:#222">02 包装</div><div style="background:#4b8bbe">03 海报</div><div style="background:#2fbf9f;color:#111">04 插画</div><div style="background:#f08a4b">05 动效</div><div style="background:#8b5a2b">06 摄影</div></div></div>`;
+  return `<div class="full">${bar}<div class="dev"><div class="side"><div class="av" style="background:${p?p.color:'#58a6ff'}"></div><b style="color:#fff">${esc(name)}</b><br>Melbourne, AU<br>${esc(p ? p.prog : 'Master of IT')}<br><br>github.com/…<br>${esc(site)}</div><div class="main"><div><b>campus-swap</b>二手教材交换小程序，Taro + Supabase</div><div><b>timetable-cli</b>把课表导出到 ics 的命令行工具</div><div><b>rust-notes</b>Rust 学习笔记，mdBook</div><div><b>wall-bot</b>墨大墙活动提醒机器人</div></div></div></div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="board-row">
+      <div class="board-tabs" role="tablist">
+        <button class="tab-pill ${tab==='people'?'is-active':''}" data-act="tab" data-v="people">找人 · 技能与作品<span class="n">${people.length}</span></button>
+        <button class="tab-pill ${tab==='proj'?'is-active':''}" data-act="tab" data-v="proj">组队 · 招募<span class="n">${projects.length}</span></button>
+      </div>
+      <button class="primary-button" data-act="create">+ 创建我的主页</button>
+    </div>
+    <div class="page-head">
+      <div>
+        <h1>技能墙<span class="beta">试运营</span></h1>
+        <p>把你会的东西、做过的作品放出来。认识同样在做东西的人，或者招几个人一起把想法做出来。</p>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="chip marker ${onlyOpen?'':'off'}" data-act="onlyopen">✎ 只看开放组队的</button>
+      ${allTags().map(t => `<button class="chip ${filterTag===t?'is-active':''}" data-act="tag" data-v="${esc(t)}">${esc(t)}</button>`).join('')}
+      <span class="spacer"></span>
+      <input class="search" placeholder="筛技能、专业、项目…" value="${esc(q)}" data-act="q">
+    </div>
+    <div class="board">${tab === 'people' ? renderPeople() : renderProjects()}</div>`;
+}
+function matches(p) {
+  if (onlyOpen && !p.open) return false;
+  if (filterTag && !p.tags.includes(filterTag)) return false;
+  if (q) { const s = (p.name + p.prog + p.pitch + p.tags.join(' ')).toLowerCase(); if (!s.includes(q.toLowerCase())) return false; }
+  return true;
+}
+function renderPeople() {
+  const list = people.filter(matches);
+  const head = `<div class="column-head"><h2>找人</h2><span class="count">${list.length}</span></div>`;
+  if (!list.length) return head + `<div class="grid"><div class="empty">没有匹配的人。换个标签，或者你就是第一个。</div></div>`;
+  return head + `<div class="grid">${list.map(p => `
+    <article class="card">
+      ${p.open ? `<span class="open-mark">✎ 开放组队</span>` : ''}
+      <div class="who"><div class="avatar" style="background:${p.color}">${esc(p.name[0])}</div><div><div class="name">${esc(p.name)}</div><div class="prog">${esc(p.prog)}</div></div></div>
+      <p class="pitch">${esc(p.pitch)}</p>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <button class="thumb" data-act="view" data-v="${p.id}" aria-label="查看 ${esc(p.name)} 的作品集">${miniPreview(p.tpl, p.color)}<span class="site">${esc(p.site)}</span></button>
+      <div class="links">${p.links.map(l=>`<span>↗ ${esc(l)}</span>`).join('')}</div>
+      <div class="foot">
+        <button class="ghost-button sm" data-act="view" data-v="${p.id}">看作品集</button>
+        ${p.friend ? `<button class="ghost-button sm" data-act="hi" data-v="${esc(p.name)}">打个招呼</button>` : ''}
+        ${p.open ? `<button class="primary-button sm" data-act="invite" data-v="${esc(p.name)}">邀请组队</button>` : ''}
+      </div>
+    </article>`).join('')}</div>`;
+}
+function renderProjects() {
+  const list = projects.filter(p => { if (filterTag && !p.tags.includes(filterTag)) return false; if (q) { const s=(p.title+p.desc+p.by+p.tags.join(' ')).toLowerCase(); if(!s.includes(q.toLowerCase())) return false; } return true; });
+  const head = `<div class="column-head"><h2>组队招募</h2><div style="display:flex;gap:8px;align-items:center"><span class="count">${list.length}</span><button class="ghost-button sm" data-act="newproj">+ 发招募</button></div></div>`;
+  if (!list.length) return head + `<div class="empty">还没有这类招募。发一个？</div>`;
+  return head + `<div style="display:grid;gap:12px">${list.map(p => `
+    <article class="proj">
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="stage ${p.stage==='想法'?'idea':p.stage==='找人中'?'open':''}">${esc(p.stage)}</span><h3>${esc(p.title)}</h3></div>
+        <div class="meta"><span>发起 <b>${esc(p.by)}</b></span><span>${esc(p.when)}</span></div>
+        <p>${esc(p.desc)}</p>
+        <div class="tags">${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      </div>
+      <div class="roles">
+        <div class="h">缺的人</div>
+        ${p.roles.map(r => `<div class="role ${r[1]>=r[2]?'full':''}"><span><span class="dot"></span>${esc(r[0])}</span><span class="cnt">${r[1]}/${r[2]}</span></div>`).join('')}
+        <div class="apply">${p.applied ? `<span class="ok">✓ 已申请，等发起人回复</span>` : `<button class="primary-button sm" data-act="apply" data-v="${p.id}" style="width:100%">申请加入</button>`}</div>
+      </div>
+    </article>`).join('')}</div>`;
+}
+function modal(title, body) {
+  closeModal();
+  const o = document.createElement('div'); o.className = 'overlay'; o.id = 'overlay';
+  o.innerHTML = `<div class="modal" role="dialog" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="x" data-act="close" aria-label="关闭">×</button></div><div class="mb">${body}</div></div>`;
+  o.addEventListener('click', e => { if (e.target === o) closeModal(); });
+  document.body.appendChild(o);
+}
+function closeModal() { const o = document.getElementById('overlay'); if (o) o.remove(); }
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+
+function createForm() {
+  modal('创建我的主页', `<form class="form" id="cf">
+    <div class="two"><label>昵称<input name="name" value="Zilong" required></label><label>专业 · 年级<input name="prog" value="Master of IT · 2 年级"></label></div>
+    <label>一句话介绍（别人会先看这个）<textarea name="pitch" rows="2" placeholder="比如：做过两个上线的小程序，想找人做校园工具。"></textarea></label>
+    <label>技能标签（逗号分隔，最多 5 个）<input name="tags" value="React, Python" placeholder="React, Figma, 剪辑"></label>
+    <label>已有的链接（个人网站 / GitHub / Behance / 小红书）<input name="site" placeholder="留空就用我们的模板生成 unimelbwall.com/p/zilong"></label>
+    <div><div class="tplhead"><span>作品集模板（没有自己网站的话，选一个，改文字就能发布）</span><button type="button" class="ghost-button sm" data-act="preview-picked">预览选中的模板</button></div><div class="tplpick">${tplList.map(t=>`<button type="button" class="${me.tpl===t.id?'on':''}" data-pick="${t.id}"><span class="prev">${miniPreview(t.id)}</span>${esc(t.name)}<small>${esc(t.forWho)}</small></button>`).join('')}</div></div>
+    <div class="checks"><label><input type="checkbox" name="friend" checked> 开放交友</label><label><input type="checkbox" name="open" checked> ✎ 开放组队</label></div>
+    <div class="actions"><button type="button" class="ghost-button" data-act="close">取消</button><button class="primary-button" type="submit">发布到技能墙</button></div>
+  </form>`);
+  const f = document.getElementById('cf');
+  f.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => { f.querySelectorAll('[data-pick]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }));
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const d = new FormData(f);
+    const tpl = f.querySelector('[data-pick].on').dataset.pick;
+    const name = d.get('name') || '匿名';
+    people.unshift({ id: Date.now(), name, prog: d.get('prog') || '', pitch: d.get('pitch') || '还没写介绍。', tags: String(d.get('tags')).split(/[,，]/).map(s=>s.trim()).filter(Boolean).slice(0,5), open: !!d.get('open'), friend: !!d.get('friend'), tpl, site: d.get('site') || ('unimelbwall.com/p/' + String(name).toLowerCase().replace(/\s+/g,'')), color: '#0a4db3', links: d.get('site') ? ['个人网站'] : [] });
+    me = { open: !!d.get('open'), friend: !!d.get('friend'), tpl };
+    tab = 'people'; filterTag = null; onlyOpen = false; q = '';
+    closeModal(); render(); toast('已发布，你的名片在最前面');
+  });
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act, v = b.dataset.v;
+  if (a === 'tab') { tab = v; filterTag = null; render(); }
+  else if (a === 'tag') { filterTag = filterTag === v ? null : v; render(); }
+  else if (a === 'onlyopen') { onlyOpen = !onlyOpen; render(); }
+  else if (a === 'view') { const p = people.find(x => String(x.id) === v); modal(`${p.name} 的作品集`, fullPreview(p.tpl, p) + `<div class="actions" style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">${p.friend?`<button class="ghost-button sm" data-act="hi" data-v="${esc(p.name)}">打个招呼</button>`:''}${p.open?`<button class="primary-button sm" data-act="invite" data-v="${esc(p.name)}">邀请组队</button>`:''}</div>`); }
+  else if (a === 'hi') { closeModal(); toast(`已给 ${v} 发了一条私信打招呼`); }
+  else if (a === 'invite') { closeModal(); toast(`已邀请 ${v}，对方同意后会进同一个群聊`); }
+  else if (a === 'apply') { const p = projects.find(x => String(x.id) === v); p.applied = true; render(); toast(`已向 ${p.by} 申请加入「${p.title}」`); }
+  else if (a === 'newproj') { toast('demo 里先不做发帖表单：字段 = 标题 / 阶段 / 时间投入 / 缺的岗位与人数 / 标签'); }
+  else if (a === 'create') createForm();
+  else if (a === 'preview-picked') { const v2 = document.querySelector('#cf [data-pick].on').dataset.pick; const t = tplList.find(x => x.id === v2); modal(`模板预览 · ${t.name}`, fullPreview(v2, null) + `<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px"><button class="ghost-button sm" data-act="create">返回填写</button><button class="primary-button sm" data-act="use-tpl" data-v="${v2}">用这个模板</button></div>`); }
+  else if (a === 'preview-tpl') { const t = tplList.find(x => x.id === v); modal(`模板预览 · ${t.name}`, fullPreview(v, null) + `<div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="primary-button sm" data-act="use-tpl" data-v="${v}">用这个模板</button></div>`); }
+  else if (a === 'use-tpl') { me.tpl = v; createForm(); toast(`已选「${tplList.find(x=>x.id===v).name}」`); }
+  else if (a === 'me-open') { me.open = !me.open; render(); }
+  else if (a === 'me-friend') { me.friend = !me.friend; render(); }
+  else if (a === 'close') closeModal();
+});
+document.addEventListener('input', e => { if (e.target.dataset.act === 'q') { q = e.target.value; const pos = e.target.selectionStart; render(); const i = document.querySelector('[data-act="q"]'); i.focus(); i.setSelectionRange(pos, pos); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+if (location.hash === "#proj") tab = "proj";
+render();
+</script>
+
+</body>
+</html>
