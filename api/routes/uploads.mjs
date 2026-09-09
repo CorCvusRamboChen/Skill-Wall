@@ -30,8 +30,15 @@ function sniff(buf) {
 
 // Absolute URL for a stored file, built from what the proxy tells us.
 export function publicUrl(c, file) {
-  const proto = c.req.header("x-forwarded-proto") || "http";
   const host = c.req.header("x-forwarded-host") || c.req.header("host") || "localhost";
+  // The walls sit behind a Cloudflare Tunnel: nginx sees plain http and so
+  // forwards "http" even though the visitor is on https. Cloudflare's own
+  // cf-visitor header carries the real scheme; failing that, anything that is
+  // not a local address is https in practice.
+  const cf = c.req.header("cf-visitor") || "";
+  const forwarded = c.req.header("x-forwarded-proto") || "";
+  const local = /^(localhost|127\.|172\.|10\.|192\.168\.)/.test(host);
+  const proto = /"scheme":"https"/.test(cf) || forwarded === "https" || !local ? "https" : "http";
   const prefix = (c.req.header("x-forwarded-prefix") || "").replace(/\/+$/, "");
   return `${proto}://${host}${prefix}/uploads/${file}`;
 }
