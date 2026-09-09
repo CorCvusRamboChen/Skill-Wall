@@ -1,0 +1,3 @@
+# Windows checkout + git archive must not turn these into CRLF: the container
+# runs them as-is (a "#!/usr/bin/env bash" shebang does not exist).
+* text=auto eol=lf
