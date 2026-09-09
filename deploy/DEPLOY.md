@@ -37,6 +37,14 @@ ssh rambo@100.64.116.93 'cd ~/skill-wall && docker compose up -d --build api'
 
 ## 备份
 
+每晚 04:20 由 crontab 跑 `scripts/backup.sh`（库 dump + 上传卷，各留 14 份，在 `~/skill-wall/backups/`），forum-app 上已装。手动：
+
+```bash
+ssh rambo@100.64.116.93 '~/skill-wall/scripts/backup.sh'
+```
+
+老办法（单次拉到本地）：
+
 ```bash
 ssh rambo@100.64.116.93 'cd ~/skill-wall && docker compose exec -T db pg_dump -U skillwall skillwall' | gzip > skillwall-$(date +%F).sql.gz
 ```
