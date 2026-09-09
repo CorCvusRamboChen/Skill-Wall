@@ -27,6 +27,9 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-skillwall}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-skillwall}
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - skillwall-uploads:/data/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -38,3 +41,4 @@ services:
 
 volumes:
   skillwall-pg:
+  skillwall-uploads:

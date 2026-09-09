@@ -7,6 +7,7 @@ import { q } from "./db.mjs";
 import me from "./routes/me.mjs";
 import profiles from "./routes/profiles.mjs";
 import posts from "./routes/posts.mjs";
+import uploads from "./routes/uploads.mjs";
 
 export function createApp() {
   const app = new Hono();
@@ -24,6 +25,7 @@ export function createApp() {
   app.route("/me", me);
   app.route("/profiles", profiles);
   app.route("/posts", posts);
+  app.route("/uploads", uploads);
 
   app.notFound((c) => c.json({ error: "not_found" }, 404));
   app.onError((err, c) => {

@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 import { q } from "../db.mjs";
 import { requireUser } from "../auth.mjs";
-import { str, tags, oneOf, bool, url, slugify } from "../validate.mjs";
+import { str, tags, oneOf, bool, url, slugify, works } from "../validate.mjs";
 
 export const TEMPLATES = ["cv", "gallery", "dev"];
 const me = new Hono();
@@ -31,8 +31,13 @@ me.put("/profile", async (c) => {
   const template = oneOf(b.template, "template", TEMPLATES);
   const siteUrl = url(b.siteUrl, "siteUrl");
   const links = Array.isArray(b.links) ? b.links.slice(0, 6).map((l) => ({ label: str(l?.label, "links.label", { max: 24, required: true }), url: url(l?.url, "links.url") })) : [];
-  const content = b.content && typeof b.content === "object" && !Array.isArray(b.content) ? b.content : {};
-  if (JSON.stringify(content).length > 20_000) return c.json({ error: "content: too large" }, 400);
+  // `content` is the template payload. Only known keys survive, each validated,
+  // so a card can never carry arbitrary JSON to the renderer.
+  const raw = b.content && typeof b.content === "object" && !Array.isArray(b.content) ? b.content : {};
+  const content = {
+    about: str(raw.about, "content.about", { max: 600 }),
+    works: works(raw.works, "content.works")
+  };
   const published = bool(b.published, "published", true);
 
   if (displayName) await q(`update users set display_name = $2 where id = $1`, [user.id, displayName]);
@@ -61,6 +66,38 @@ me.put("/profile", async (c) => {
     [user.id, slug, program, pitch, skillTags, openToTeam, openToFriends, template, siteUrl, JSON.stringify(links), JSON.stringify(content), published]
   );
   return c.json({ profile: rows[0] });
+});
+
+// Posts I own (every stage, closed included) — for the 管理 view.
+me.get("/posts", async (c) => {
+  const user = requireUser(c);
+  const { rows } = await q(
+    `select t.*, u.display_name as owner_name,
+       coalesce((select json_agg(json_build_object('id', r.id, 'name', r.name, 'needed', r.needed, 'filled', r.filled) order by r.position)
+                 from team_roles r where r.post_id = t.id), '[]'::json) as roles,
+       (select count(*)::int from team_applications a where a.post_id = t.id and a.status = 'pending') as pending_count
+     from team_posts t join users u on u.id = t.owner_id
+     where t.owner_id = $1 order by t.updated_at desc`,
+    [user.id]
+  );
+  return c.json({ items: rows });
+});
+
+// Applications I sent, with the post they belong to.
+me.get("/applications", async (c) => {
+  const user = requireUser(c);
+  const { rows } = await q(
+    `select a.id, a.post_id, a.role_id, a.status, a.message, a.created_at, a.updated_at,
+       t.title as post_title, t.stage as post_stage, r.name as role_name,
+       u.display_name as owner_name
+     from team_applications a
+     join team_posts t on t.id = a.post_id
+     join users u on u.id = t.owner_id
+     left join team_roles r on r.id = a.role_id
+     where a.applicant_id = $1 order by a.updated_at desc`,
+    [user.id]
+  );
+  return c.json({ items: rows });
 });
 
 me.delete("/profile", async (c) => {

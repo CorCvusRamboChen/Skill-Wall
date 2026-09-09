@@ -34,6 +34,7 @@ export const config = {
   port: Number(process.env.PORT || 8787),
   databaseUrl: required("DATABASE_URL"),
   corsOrigins: (process.env.CORS_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean),
+  uploadDir: process.env.UPLOAD_DIR || "./data/uploads",
   realms: parseRealms(required("REALMS"))
 };
 

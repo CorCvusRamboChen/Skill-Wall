@@ -7,7 +7,16 @@ import { requireUser } from "../auth.mjs";
 import { str, tags, oneOf, int, bad, url } from "../validate.mjs";
 
 export const STAGES = ["idea", "recruiting", "active", "closed"];
+const MAX_OPEN_POSTS = 10;
 const posts = new Hono();
+
+// The caller's own application on each post (null when anonymous) so the
+// card can say 已申请 / 已接受 instead of offering 申请加入 again.
+function myStatusSql(user, params) {
+  if (!user) return "null::text as my_status";
+  params.push(user.id);
+  return `(select a.status from team_applications a where a.post_id = t.id and a.applicant_id = $${params.length}) as my_status`;
+}
 
 const POST = `
   t.id, t.title, t.stage, t.commitment, t.description, t.tags, t.cover_url, t.created_at, t.updated_at,
@@ -36,9 +45,10 @@ posts.get("/", async (c) => {
   const params = stage ? [stage] : [];
   if (tag) { params.push(tag); where.push(`$${params.length} = any(t.tags)`); }
   if (search) { params.push(`%${search}%`); where.push(`(t.title ilike $${params.length} or t.description ilike $${params.length})`); }
+  const mine = myStatusSql(c.get("user"), params);
   params.push(limit, offset);
   const { rows } = await q(
-    `select ${POST} from team_posts t join users u on u.id = t.owner_id
+    `select ${POST}, ${mine} from team_posts t join users u on u.id = t.owner_id
      where ${where.join(" and ")}
      order by t.updated_at desc limit $${params.length - 1} offset $${params.length}`,
     params
@@ -56,6 +66,8 @@ posts.post("/", async (c) => {
   const postTags = tags(b.tags);
   const coverUrl = url(b.coverUrl, "coverUrl");
   const roles = parseRoles(b.roles);
+  const { rows: open } = await q(`select count(*)::int as n from team_posts where owner_id = $1 and stage <> 'closed'`, [user.id]);
+  if (open[0].n >= MAX_OPEN_POSTS) throw new HTTPException(429, { message: "too_many_open_posts" });
 
   const id = await tx(async (db) => {
     const { rows } = await db.query(
@@ -71,13 +83,35 @@ posts.post("/", async (c) => {
   return c.json(await loadPost(id), 201);
 });
 
-async function loadPost(id) {
-  const { rows } = await q(`select ${POST} from team_posts t join users u on u.id = t.owner_id where t.id = $1`, [id]);
+async function loadPost(id, user = null) {
+  const params = [id];
+  const mine = myStatusSql(user, params);
+  const { rows } = await q(`select ${POST}, ${mine} from team_posts t join users u on u.id = t.owner_id where t.id = $1`, params);
   if (!rows[0]) throw new HTTPException(404, { message: "not_found" });
   return rows[0];
 }
 
-posts.get("/:id", async (c) => c.json(await loadPost(c.req.param("id"))));
+posts.get("/:id", async (c) => c.json(await loadPost(c.req.param("id"), c.get("user"))));
+
+posts.delete("/:id", async (c) => {
+  const user = requireUser(c);
+  const post = await loadPost(c.req.param("id"));
+  if (post.owner_id !== user.id) throw new HTTPException(403, { message: "not_owner" });
+  await q(`delete from team_posts where id = $1`, [post.id]); // roles + applications cascade
+  return c.json({ ok: true });
+});
+
+// Withdraw my application. An accepted seat goes back to the pool.
+posts.delete("/:id/apply", async (c) => {
+  const user = requireUser(c);
+  const post = await loadPost(c.req.param("id"));
+  await tx(async (db) => {
+    const { rows } = await db.query(`delete from team_applications where post_id = $1 and applicant_id = $2 returning role_id, status`, [post.id, user.id]);
+    if (!rows[0]) throw new HTTPException(404, { message: "not_found" });
+    if (rows[0].status === "accepted") await db.query(`update team_roles set filled = greatest(filled - 1, 0) where id = $1`, [rows[0].role_id]);
+  });
+  return c.json({ ok: true });
+});
 
 posts.patch("/:id", async (c) => {
   const user = requireUser(c);

@@ -70,3 +70,17 @@ export function slugify(s) {
     .replace(/^-+|-+$/g, "")
     .slice(0, 40);
 }
+
+// Portfolio works — the one content shape every template renders (cv as a
+// list, gallery as an image grid, dev as repo cards). Up to 8 entries.
+export function works(v, field = "works") {
+  if (v == null) return [];
+  if (!Array.isArray(v)) bad(field, "must be an array");
+  if (v.length > 8) bad(field, "max 8");
+  return v.map((w, i) => ({
+    title: str(w?.title, `${field}[${i}].title`, { max: 60, min: 1, required: true }),
+    description: str(w?.description, `${field}[${i}].description`, { max: 200 }),
+    url: url(w?.url, `${field}[${i}].url`),
+    image: url(w?.image, `${field}[${i}].image`)
+  }));
+}
