@@ -47,6 +47,15 @@ JWT secret（或 JWKS）验签，首次见到就建一行 `users`。
 | POST | `/posts/:id/apply` | 申请：roleId, message |
 | GET | `/posts/:id/applications` | 申请列表（仅发起人） |
 | PATCH | `/posts/:id/applications/:appId` | status = accepted / rejected；accepted 占一个位子 |
+| DELETE | `/posts/:id` | 删帖（仅发起人；岗位、申请级联删除） |
+| DELETE | `/posts/:id/apply` | 撤回我的申请（已接受的会把位子还回去） |
+| GET | `/me/posts` | 我发的帖（含已结束，带 pending_count） |
+| GET | `/me/applications` | 我发出的申请及其状态 |
+| POST | `/uploads` | multipart 字段 `file`，jpg/png/gif/webp，≤3MB，每人 60 张；返回 `{id, url}`，url 是同源绝对地址 |
+| GET | `/uploads/:file` | 取图，一年 immutable 缓存 |
+
+`PUT /me/profile` 的 `content` 只认两个键：`about`（≤600 字）和 `works[]`（≤8 条，每条 title/description/url/image）。
+招募帖列表在登录时多一列 `my_status`（null / pending / accepted / rejected）。每人同时最多 10 条未结束的帖。
 
 没带 token 的请求可以读公开内容；带了坏 token 一律 401。
 
@@ -72,6 +81,10 @@ curl -H "Authorization: Bearer $(npm run -s dev:token)" http://localhost:8787/me
 docker compose exec -T db psql -U skillwall -d skillwall -f - < db/seed-demo.sql   # 幂等，重跑即替换
 docker compose exec -T db psql -U skillwall -d skillwall -c "delete from users where realm = 'demo'"   # 一句清掉
 ```
+
+## 备份
+
+`scripts/backup.sh` 每晚把库 dump 和上传卷打包到 `backups/`，各留 14 份；forum-app 上已装 crontab（04:20）。
 
 ## 部署
 
