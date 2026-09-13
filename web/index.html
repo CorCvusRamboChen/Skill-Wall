@@ -79,9 +79,12 @@
   .hero .eyebrow b { color: var(--marker-ink); background: var(--marker); padding: 1px 8px; border-radius: 3px; font-weight: 600; }
   .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 14px 0 0; white-space: nowrap; overflow: hidden; }
   .giant .alt { color: transparent; -webkit-text-stroke: 2px var(--ink); }
-  .hero-row { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 36px; align-items: end; margin-top: 22px; }
+  .hero-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: end; margin-top: 22px; }
   .hero p.lede { font-size: 18px; max-width: 34em; margin: 0; color: var(--text); }
-  .hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+  .hero .ctas .btn { min-height: 46px; padding: 0 20px; font-size: 15px; }
+  @media (max-width: 860px) { .hero .ctas { justify-content: flex-start; } }
+  [hidden] { display: none !important; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
   .stat .n { font-family: var(--giant); font-size: 34px; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -190,17 +193,17 @@
 
 <main>
   <section class="hero wrap">
-    <div class="eyebrow"><span>SKILL WALL · 技能墙</span><b>试运营</b><span>MELBOURNE → 8 CAMPUSES</span></div>
     <h1 class="giant">SKILL <span class="alt">WALL</span></h1>
     <div class="hero-row">
       <div>
         <p class="lede">把你会的东西、做过的作品放出来，认识同样在做东西的人；有想做的东西，招几个人一起把它做出来。</p>
-        <div class="ctas">
-          <a class="btn solid" href="#people">看看大家在做什么</a>
-          <a class="btn marker" href="#recruit">✎ 我要找队友</a>
-        </div>
       </div>
-      <div class="stats" id="stats">
+      <div class="ctas">
+        <a class="btn solid" href="#people">看看大家在做什么</a>
+        <a class="btn marker" href="#recruit">✎ 我要找队友</a>
+      </div>
+      <!-- 数字块先藏起来（hidden），等接了真数据再决定要不要露 -->
+      <div class="stats" id="stats" hidden>
         <div class="stat"><div class="n" data-stat="people">8</div><div class="k">张名片</div></div>
         <div class="stat"><div class="n" data-stat="posts">5</div><div class="k">条招募</div></div>
         <div class="stat"><div class="n" data-stat="seats">9</div><div class="k">个缺人的位子</div></div>
