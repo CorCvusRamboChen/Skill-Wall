@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Wall 技能墙</title>
+<meta name="description" content="把你会的东西、做过的作品放出来，认识同样在做东西的人，招几个人一起把想法做出来。澳洲各校学生的技能墙。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+  /* 独立站的 token。墨色和荧光黄沿用墙里技能墙那一页，让两边一眼是一家；
+     其余是自己的：没有侧栏，版心 1180，字更大、留白更宽。 */
+  :root {
+    --ink: #0b1440;
+    --ink-2: #26305a;
+    --text: #20242c;
+    --muted: #687082;
+    --soft: #8a93a6;
+    --line: #dfe4ee;
+    --paper: #f5f7fb;
+    --surface: #ffffff;
+    --surface-2: #eef1f7;
+    --marker: #ffe95c;
+    --marker-ink: #2a2600;
+    --open: #1c7f5f;
+    --shadow: 0 1px 2px rgba(11, 20, 64, .06), 0 10px 30px rgba(11, 20, 64, .08);
+    --giant: "Archivo Black", "Arial Black", Helvetica, Arial, sans-serif;
+    --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef1f8; --ink-2: #c9d0e6; --text: #e6e8ee; --muted: #9aa3b8; --soft: #6f7890;
+      --line: #2a3145; --paper: #0f1320; --surface: #171c2c; --surface-2: #1f2537;
+      --marker: #e0c93a; --marker-ink: #1a1600; --open: #4cc59a;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #eef1f8; --ink-2: #c9d0e6; --text: #e6e8ee; --muted: #9aa3b8; --soft: #6f7890;
+    --line: #2a3145; --paper: #0f1320; --surface: #171c2c; --surface-2: #1f2537;
+    --marker: #e0c93a; --marker-ink: #1a1600; --open: #4cc59a;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.4);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- top bar ---- */
+  .top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .wordmark { font-family: var(--giant); font-size: 18px; letter-spacing: -.02em; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  .wordmark i { width: 10px; height: 22px; background: var(--marker); display: inline-block; transform: skewX(-12deg); }
+  .top nav { display: flex; gap: 22px; margin-left: 8px; }
+  .top nav a { text-decoration: none; color: var(--muted); font-weight: 500; }
+  .top nav a:hover { color: var(--ink); }
+  .top .spacer { flex: 1; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; text-decoration: none; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.solid:hover { filter: brightness(1.15); }
+  .btn.marker { background: var(--marker); color: var(--marker-ink); border-color: var(--marker); }
+  @media (max-width: 720px) { .top nav { display: none; } }
+
+  /* ---- hero ---- */
+  .hero { padding: 56px 0 28px; }
+  .hero .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--muted); display: flex; gap: 14px; align-items: center; }
+  .hero .eyebrow b { color: var(--marker-ink); background: var(--marker); padding: 1px 8px; border-radius: 3px; font-weight: 600; }
+  .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 14px 0 0; white-space: nowrap; overflow: hidden; }
+  .giant .alt { color: transparent; -webkit-text-stroke: 2px var(--ink); }
+  .hero-row { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 36px; align-items: end; margin-top: 22px; }
+  .hero p.lede { font-size: 18px; max-width: 34em; margin: 0; color: var(--text); }
+  .hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .stat .n { font-family: var(--giant); font-size: 34px; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .k { margin-top: 6px; font-size: 12px; color: var(--muted); }
+  @media (max-width: 860px) { .hero-row { grid-template-columns: 1fr; } .giant { white-space: normal; } }
+
+  /* ---- sections ---- */
+  section.block { padding: 44px 0 8px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  .sec-head h2 { margin: 0; font-family: var(--giant); font-size: 34px; letter-spacing: -.02em; color: var(--ink); text-transform: uppercase; }
+  .sec-head h2 small { font-family: var(--sans); font-weight: 700; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--muted); margin-left: 12px; }
+  .sec-head a { color: var(--muted); text-decoration: none; font-weight: 600; }
+  .sec-head a:hover { color: var(--ink); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip { min-height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12.5px; font-weight: 600; }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chip.mk { background: var(--marker); color: var(--marker-ink); border-color: var(--marker); }
+  .chip.mk.off { background: var(--surface); color: var(--muted); border-color: var(--line); }
+
+  /* people cards */
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 1px 2px rgba(11,20,64,.05); transition: transform .15s, box-shadow .15s; }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .who { display: flex; gap: 12px; align-items: center; padding-right: 84px; }
+  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; flex: none; }
+  .name { font-weight: 800; font-size: 16px; color: var(--ink); }
+  .prog { font-size: 13px; color: var(--muted); }
+  .pitch { margin: 0; font-size: 14px; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text); }
+  .mark { position: absolute; top: 16px; right: 16px; padding: 2px 8px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-size: 11px; font-weight: 800; }
+  .thumb { border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); aspect-ratio: 16/8; overflow: hidden; padding: 10px; }
+  .card .act { display: flex; gap: 8px; margin-top: auto; }
+  .card .act .btn { flex: 1; justify-content: center; min-height: 32px; font-size: 13px; }
+
+  /* mini previews (same three templates as the wall) */
+  .mini { width: 100%; height: 100%; background: #fff; color: #1a1a1a; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.15); overflow: hidden; font-size: 8px; }
+  .mini.cv { padding: 12px 14px; }
+  .mini.cv .nm { font-weight: 900; font-size: 12px; }
+  .mini.cv .ln { height: 5px; background: #e6e6e6; border-radius: 2px; margin: 4px 0; }
+  .mini.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; background: #111; }
+  .mini.gal div { aspect-ratio: 1; border-radius: 2px; }
+  .mini.dev { display: grid; grid-template-columns: 56px 1fr; }
+  .mini.dev .side { background: #0d1117; }
+  .mini.dev .main { padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; align-content: start; }
+  .mini.dev .main div { border: 1px solid #b8c0cc; background: #eef1f5; border-radius: 3px; height: 22px; }
+
+  /* recruit cards */
+  .posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 960px) { .posts { grid-template-columns: 1fr; } }
+  .proj { display: grid; grid-template-columns: minmax(0, 1fr) 176px; gap: 18px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  @media (max-width: 560px) { .proj { grid-template-columns: 1fr; } }
+  .proj h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink); }
+  .stage { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; background: var(--ink); color: var(--paper); }
+  .stage.rec { background: var(--open); color: #fff; }
+  .stage.idea { background: var(--surface-2); color: var(--ink); }
+  .meta { margin-top: 6px; color: var(--muted); font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta b { color: var(--ink-2); }
+  .desc { margin: 8px 0 10px; font-size: 14px; }
+  .roles { display: flex; flex-direction: column; gap: 6px; border-left: 1px solid var(--line); padding-left: 16px; }
+  @media (max-width: 560px) { .roles { border-left: 0; padding: 12px 0 0; border-top: 1px solid var(--line); } }
+  .roles .h { font-size: 11px; font-weight: 800; color: var(--soft); letter-spacing: .04em; }
+  .role { display: flex; justify-content: space-between; font-size: 14px; }
+  .role.full { color: var(--soft); text-decoration: line-through; }
+  .role .cnt { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .roles .btn { margin-top: auto; justify-content: center; min-height: 34px; }
+
+  /* how it works */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+  .step { padding: 22px 22px 24px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+  .step .num { font-family: var(--giant); font-size: 44px; line-height: 1; color: var(--ink); }
+  .step .num::after { content: ""; display: block; width: 44px; height: 8px; background: var(--marker); margin-top: 6px; }
+  .step h3 { margin: 14px 0 6px; font-size: 17px; color: var(--ink); }
+  .step p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* schools / login */
+  .schools { padding: 28px; border-radius: 16px; background: var(--ink); color: var(--paper); display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: center; }
+  @media (max-width: 860px) { .schools { grid-template-columns: 1fr; } }
+  .schools h2 { margin: 0; font-family: var(--giant); font-size: 30px; letter-spacing: -.02em; text-transform: uppercase; }
+  .schools p { margin: 8px 0 0; color: color-mix(in srgb, var(--paper) 75%, transparent); max-width: 40em; }
+  .school-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .school-list a { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 8%, transparent); border: 1px solid color-mix(in srgb, var(--paper) 18%, transparent); color: var(--paper); text-decoration: none; font-weight: 600; font-size: 14px; }
+  .school-list a small { font-family: var(--mono); font-size: 11px; opacity: .7; }
+  .school-list a:hover { background: color-mix(in srgb, var(--paper) 16%, transparent); }
+  .school-list a.live small { color: var(--marker); opacity: 1; }
+
+  footer { padding: 40px 0 60px; color: var(--muted); font-size: 13px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 20px; }
+  footer a { color: var(--muted); text-decoration: none; margin-left: 16px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .card { transition: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="wordmark" href="#"><i></i>SKILL WALL</a>
+    <nav><a href="#people">找人</a><a href="#recruit">组队</a><a href="#how">怎么玩</a><a href="#schools">学校</a></nav>
+    <span class="spacer"></span>
+    <a class="btn" href="#schools">用校园墙账号登录</a>
+    <a class="btn solid" href="#schools">+ 创建我的主页</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow"><span>SKILL WALL · 技能墙</span><b>试运营</b><span>MELBOURNE → 8 CAMPUSES</span></div>
+    <h1 class="giant">SKILL <span class="alt">WALL</span></h1>
+    <div class="hero-row">
+      <div>
+        <p class="lede">把你会的东西、做过的作品放出来，认识同样在做东西的人；有想做的东西，招几个人一起把它做出来。</p>
+        <div class="ctas">
+          <a class="btn solid" href="#people">看看大家在做什么</a>
+          <a class="btn marker" href="#recruit">✎ 我要找队友</a>
+        </div>
+      </div>
+      <div class="stats" id="stats">
+        <div class="stat"><div class="n" data-stat="people">8</div><div class="k">张名片</div></div>
+        <div class="stat"><div class="n" data-stat="posts">5</div><div class="k">条招募</div></div>
+        <div class="stat"><div class="n" data-stat="seats">9</div><div class="k">个缺人的位子</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="people">
+    <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><a href="#people">全部名片 →</a></div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="people-grid"></div>
+  </section>
+
+  <section class="block wrap" id="recruit">
+    <div class="sec-head"><h2>Recruit<small>组队 · 招募</small></h2><a href="#recruit">全部招募 →</a></div>
+    <div class="posts" id="posts"></div>
+  </section>
+
+  <section class="block wrap" id="how">
+    <div class="sec-head"><h2>How<small>怎么玩</small></h2></div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>放一张名片</h3><p>专业、一句话、五个技能标签，再选一个作品集模板或者贴你自己的网站。三分钟。</p></div>
+      <div class="step"><div class="num">2</div><h3>打开「开放组队」</h3><p>打开这个开关，别人在找队友的时候就能看到你。不想被找就关上，名片照常在。</p></div>
+      <div class="step"><div class="num">3</div><h3>发招募或申请加入</h3><p>写清楚缺什么人、要多少个、投入多少时间。申请人点一下，你在管理页里接受或拒绝。</p></div>
+    </div>
+  </section>
+
+  <section class="block wrap" id="schools">
+    <div class="schools">
+      <div>
+        <h2>Log in with your wall</h2>
+        <p>技能墙不另开账号。用你学校的校园墙账号登录即可，八所学校共用同一面墙，跨校也能组队。现在只对墨大开放试运营，其余学校陆续打开。</p>
+      </div>
+      <div class="school-list">
+        <a class="live" href="https://unimelbwall.com/#view=skill-wall">墨大墙 <small>LIVE</small></a>
+        <a href="https://monashwall.com/">莫纳什墙 <small>SOON</small></a>
+        <a href="https://anu.talkwalll.com/">ANU <small>SOON</small></a>
+        <a href="https://unsw.talkwalll.com/">UNSW <small>SOON</small></a>
+        <a href="https://usyd.talkwalll.com/">USYD <small>SOON</small></a>
+        <a href="https://uq.talkwalll.com/">UQ <small>SOON</small></a>
+        <a href="https://uwa.talkwalll.com/">UWA <small>SOON</small></a>
+        <a href="https://adelaide.talkwalll.com/">阿德墙 <small>SOON</small></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Skill Wall · 一群在墨尔本做东西的学生</span>
+    <span><a href="https://talkwalll.com/">校园墙</a><a href="https://unimelbwall.com/privacy.html">隐私</a><a href="https://unimelbwall.com/guidelines.html">社区规范</a></span>
+  </div>
+</footer>
+
+<script>
+// 首页内容：先用试运营那几张样例名片和招募帖（和 API 的 seed-demo 一致）。
+// 接 API 时把这两个数组换成 fetch(API + "/profiles") / fetch(API + "/posts")，
+// 字段名已经按 API 的 snake_case 写好。API 需要在 CORS_ORIGINS 里放行本站。
+const PEOPLE = [
+  { display_name:"林一舟", program:"Master of IT · 2 年级", pitch:"做过两个上线的小程序，最近在学 Rust。想找人一起做校园工具。", tags:["React","Node","TypeScript"], open_to_team:true, template:"dev", color:"#0a4db3" },
+  { display_name:"Chloe Wen", program:"Bachelor of Design · 3 年级", pitch:"品牌与包装方向，作品集刚重做一遍，欢迎来挑刺。", tags:["Figma","插画","UI"], open_to_team:true, template:"gallery", color:"#7b4fd1" },
+  { display_name:"赵思远", program:"BSc Data Science · 2 年级", pitch:"Kaggle 铜牌一枚。会画图会讲故事，缺一个前端搭档。", tags:["Python","数据分析","SQL"], open_to_team:true, template:"cv", color:"#1c7f5f" },
+  { display_name:"Ethan Ma", program:"Master of Architecture · 1 年级", pitch:"Rhino + Grasshopper 参数化，也接效果图。周末想找乐队。", tags:["Rhino","建模","吉他"], open_to_team:false, template:"gallery", color:"#5b6b8c" },
+  { display_name:"许晚晴", program:"Bachelor of Arts (Media) · 3 年级", pitch:"跑过三档校园播客，剪辑和采访都行。想做一档留学生访谈。", tags:["剪辑","写作","公众号"], open_to_team:true, template:"cv", color:"#b8741a" },
+  { display_name:"Kevin Zhou", program:"Master of Engineering (Software) · 2 年级", pitch:"iOS 开发，做过一个上架的日语学习 app。Unihack 找队友。", tags:["Swift","Flutter","产品"], open_to_team:true, template:"dev", color:"#c94f2b" },
+];
+const POSTS = [
+  { title:"墨大二手教材交换小程序", owner:"林一舟", stage:"active", commitment:"到 11 月底 · 每周 2 次线上", description:"解决每学期教材贵、买了用一次的问题。已有原型和 30 个种子用户，缺后端和运营。", tags:["React","Node","产品"], roles:[["前端",1,1],["后端",0,1],["运营/推广",0,2]] },
+  { title:"Unihack 2026 组队", owner:"Kevin Zhou", stage:"recruiting", commitment:"黑客松周末 · 10 月 18–19", description:"去年进了决赛，今年想冲奖。方向偏 AI 工具，已经有两个开发，缺设计和一个会讲的人。", tags:["Swift","Figma","产品"], roles:[["开发",2,2],["UI/UX",0,1],["Pitch / PM",0,1]] },
+  { title:"留学生访谈播客《墨尔本夜话》", owner:"许晚晴", stage:"recruiting", commitment:"双周更 · 长期", description:"每期请一位在墨尔本做有意思事情的中国学生。有设备有剪辑，缺一个搭档主持和一个做封面的。", tags:["剪辑","写作","插画"], roles:[["联合主持",0,1],["封面/视觉",0,1]] },
+  { title:"毕设：AR 校园导览", owner:"Ethan Ma", stage:"idea", commitment:"2027 S1 · 可算学分", description:"把 Parkville 校区做成可交互 AR 地图。想找 Unity 或 Swift 的人一起把它变成能装的 app。", tags:["Unity","Swift","建模"], roles:[["Unity / AR 开发",0,1],["3D 建模",1,2]] },
+];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mini = (t, color) => t === "gallery"
+  ? `<div class="mini gal">${["#e06f8b","#f4c95d",color,"#4b8bbe","#2fbf9f","#f08a4b"].map(c=>`<div style="background:${c}"></div>`).join("")}</div>`
+  : t === "dev" ? `<div class="mini dev"><div class="side"></div><div class="main"><div></div><div></div><div></div><div></div></div></div>`
+  : `<div class="mini cv"><div class="nm">Name</div><div class="ln" style="width:60%"></div><div class="ln"></div><div class="ln" style="width:85%"></div><div class="ln"></div><div class="ln" style="width:70%"></div></div>`;
+
+let tag = null, onlyOpen = false;
+function renderPeople() {
+  const tags = [...new Set(PEOPLE.flatMap(p => p.tags))];
+  document.getElementById("chips").innerHTML =
+    `<button class="chip mk ${onlyOpen ? "" : "off"}" data-open>✎ 只看开放组队的</button>` +
+    tags.map(t => `<button class="chip ${tag === t ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("");
+  const list = PEOPLE.filter(p => (!onlyOpen || p.open_to_team) && (!tag || p.tags.includes(tag)));
+  document.getElementById("people-grid").innerHTML = list.map(p => `
+    <article class="card">
+      ${p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
+      <div class="who"><div class="av" style="background:${p.color}">${esc(p.display_name[0])}</div><div><div class="name">${esc(p.display_name)}</div><div class="prog">${esc(p.program)}</div></div></div>
+      <p class="pitch">${esc(p.pitch)}</p>
+      <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+      <div class="thumb">${mini(p.template, p.color)}</div>
+      <div class="act"><a class="btn" href="#schools">看作品集</a></div>
+    </article>`).join("") || `<p style="color:var(--muted)">没有匹配的人。</p>`;
+}
+document.getElementById("chips").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.hasAttribute("data-open")) onlyOpen = !onlyOpen; else tag = tag === b.dataset.tag ? null : b.dataset.tag;
+  renderPeople();
+});
+document.getElementById("posts").innerHTML = POSTS.map(p => `
+  <article class="proj">
+    <div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="stage ${p.stage === "recruiting" ? "rec" : p.stage === "idea" ? "idea" : ""}">${{active:"已开工",recruiting:"找人中",idea:"想法"}[p.stage]}</span><h3>${esc(p.title)}</h3></div>
+      <div class="meta"><span>发起 <b>${esc(p.owner)}</b></span><span>${esc(p.commitment)}</span></div>
+      <p class="desc">${esc(p.description)}</p>
+      <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    </div>
+    <div class="roles">
+      <div class="h">缺的人</div>
+      ${p.roles.map(([n, f, need]) => `<div class="role ${f >= need ? "full" : ""}"><span>${esc(n)}</span><span class="cnt">${f}/${need}</span></div>`).join("")}
+      <a class="btn solid" href="#schools">申请加入</a>
+    </div>
+  </article>`).join("");
+document.querySelector('[data-stat="seats"]').textContent = POSTS.reduce((n, p) => n + p.roles.reduce((m, [, f, need]) => m + (need - f), 0), 0);
+document.querySelector('[data-stat="posts"]').textContent = POSTS.length;
+document.querySelector('[data-stat="people"]').textContent = PEOPLE.length + 2;
+renderPeople();
+</script>
+</body>
+</html>
