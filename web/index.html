@@ -48,6 +48,7 @@
   a { color: inherit; }
   button { font: inherit; cursor: pointer; }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  [hidden] { display: none !important; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
   /* ---- top bar ---- */
@@ -68,59 +69,57 @@
   @media (max-width: 720px) {
     .top nav { display: none; }
     .top .wrap { gap: 10px; }
-    .top .btn:not(.solid) { display: none; } /* one call to action is enough on a phone */
+    .top .btn:not(.solid) { display: none; }
     .top .btn { padding: 0 12px; }
   }
 
   /* ---- hero ---- */
   .hero { padding: 56px 0 28px; }
-  .hero .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--muted); display: flex; gap: 14px; row-gap: 6px; align-items: center; flex-wrap: wrap; }
-  .hero .eyebrow > * { white-space: nowrap; }
-  .hero .eyebrow b { color: var(--marker-ink); background: var(--marker); padding: 1px 8px; border-radius: 3px; font-weight: 600; }
-  .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 14px 0 0; white-space: nowrap; overflow: hidden; }
+  .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 0; white-space: nowrap; overflow: hidden; }
   .giant .alt { color: transparent; -webkit-text-stroke: 2px var(--ink); }
   .hero-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: end; margin-top: 22px; }
   .hero p.lede { font-size: 18px; max-width: 34em; margin: 0; color: var(--text); }
   .hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
   .hero .ctas .btn { min-height: 46px; padding: 0 20px; font-size: 15px; }
-  @media (max-width: 860px) { .hero .ctas { justify-content: flex-start; } }
-  [hidden] { display: none !important; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-  .stat .n { font-family: var(--giant); font-size: 34px; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .n { font-family: var(--giant); font-size: 34px; color: var(--ink); line-height: 1; }
   .stat .k { margin-top: 6px; font-size: 12px; color: var(--muted); }
-  @media (max-width: 860px) { .hero-row { grid-template-columns: 1fr; } .giant { white-space: normal; } }
+  @media (max-width: 860px) { .hero-row { grid-template-columns: 1fr; } .giant { white-space: normal; } .hero .ctas { justify-content: flex-start; } }
 
   /* ---- sections ---- */
   section.block { padding: 44px 0 8px; }
   .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
   .sec-head h2 { margin: 0; font-family: var(--giant); font-size: 34px; letter-spacing: -.02em; color: var(--ink); text-transform: uppercase; }
   .sec-head h2 small { font-family: var(--sans); font-weight: 700; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--muted); margin-left: 12px; }
-  .sec-head a { color: var(--muted); text-decoration: none; font-weight: 600; }
-  .sec-head a:hover { color: var(--ink); }
+  .sec-head a, .sec-head button.linkish { color: var(--muted); text-decoration: none; font-weight: 600; background: none; border: 0; padding: 0; }
+  .sec-head a:hover, .sec-head button.linkish:hover { color: var(--ink); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .chip { min-height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12.5px; font-weight: 600; }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip.mk { background: var(--marker); color: var(--marker-ink); border-color: var(--marker); }
   .chip.mk.off { background: var(--surface); color: var(--muted); border-color: var(--line); }
+  .state { color: var(--muted); padding: 28px; text-align: center; border: 1px dashed var(--line); border-radius: 14px; background: var(--surface); grid-column: 1 / -1; }
+  .state .btn { margin-left: 8px; }
 
-  /* people cards */
+  /* people cards — the whole card is the click target */
   .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
-  .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 1px 2px rgba(11,20,64,.05); transition: transform .15s, box-shadow .15s; }
+  .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 1px 2px rgba(11,20,64,.05); transition: transform .15s, box-shadow .15s; cursor: pointer; }
   .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
   .who { display: flex; gap: 12px; align-items: center; padding-right: 84px; }
-  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; flex: none; }
+  .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; flex: none; overflow: hidden; background: var(--ink-2); }
+  .av img { width: 100%; height: 100%; object-fit: cover; }
   .name { font-weight: 800; font-size: 16px; color: var(--ink); }
   .prog { font-size: 13px; color: var(--muted); }
   .pitch { margin: 0; font-size: 14px; }
   .tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text); }
+  .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text); text-decoration: none; }
   .mark { position: absolute; top: 16px; right: 16px; padding: 2px 8px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-size: 11px; font-weight: 800; }
-  .thumb { border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); aspect-ratio: 16/8; overflow: hidden; padding: 10px; }
-  .card .act { display: flex; gap: 8px; margin-top: auto; }
-  .card .act .btn { flex: 1; justify-content: center; min-height: 32px; font-size: 13px; }
+  .thumb { position: relative; margin-top: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); aspect-ratio: 16/8; overflow: hidden; padding: 10px; }
+  .thumb img.cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .thumb .site { position: absolute; left: 8px; bottom: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); background: var(--surface); padding: 1px 6px; border-radius: 3px; }
 
   /* mini previews (same three templates as the wall) */
   .mini { width: 100%; height: 100%; background: #fff; color: #1a1a1a; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.15); overflow: hidden; font-size: 8px; }
@@ -146,6 +145,8 @@
   .meta { margin-top: 6px; color: var(--muted); font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; }
   .meta b { color: var(--ink-2); }
   .desc { margin: 8px 0 10px; font-size: 14px; }
+  .cover { margin: 8px 0 10px; border-radius: 8px; overflow: hidden; max-height: 180px; }
+  .cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .roles { display: flex; flex-direction: column; gap: 6px; border-left: 1px solid var(--line); padding-left: 16px; }
   @media (max-width: 560px) { .roles { border-left: 0; padding: 12px 0 0; border-top: 1px solid var(--line); } }
   .roles .h { font-size: 11px; font-weight: 800; color: var(--soft); letter-spacing: .04em; }
@@ -174,6 +175,23 @@
   .school-list a:hover { background: color-mix(in srgb, var(--paper) 16%, transparent); }
   .school-list a.live small { color: var(--marker); opacity: 1; }
 
+  /* profile modal (for cards whose owner has no site of their own) */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(11, 20, 64, .55); }
+  .modal { width: min(720px, 100%); max-height: 90vh; overflow: auto; border-radius: 14px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .mh { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .mh h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink); }
+  .x { border: 0; background: none; font-size: 22px; line-height: 1; color: var(--muted); }
+  .mb { padding: 20px; display: grid; gap: 14px; }
+  .about { margin: 0; font-size: 14px; }
+  .works { display: grid; gap: 10px; }
+  .works.gal, .works.dev { grid-template-columns: repeat(2, 1fr); }
+  .work { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 14px; }
+  .work b { display: block; color: var(--ink); }
+  .work .d { color: var(--muted); font-size: 13px; }
+  .work a { display: inline-block; margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+  .work img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; margin-bottom: 8px; }
+  .work.blank { aspect-ratio: 4/3; display: grid; place-items: center; text-align: center; }
+
   footer { padding: 40px 0 60px; color: var(--muted); font-size: 13px; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 20px; }
   footer a { color: var(--muted); text-decoration: none; margin-left: 16px; }
@@ -187,7 +205,7 @@
     <nav><a href="#people">找人</a><a href="#recruit">组队</a><a href="#how">怎么玩</a><a href="#schools">学校</a></nav>
     <span class="spacer"></span>
     <a class="btn" href="#schools">用校园墙账号登录</a>
-    <a class="btn solid" href="#schools">+ 创建我的主页</a>
+    <a class="btn solid" href="https://unimelbwall.com/#view=skill-wall">+ 创建我的主页</a>
   </div>
 </header>
 
@@ -195,31 +213,28 @@
   <section class="hero wrap">
     <h1 class="giant">SKILL <span class="alt">WALL</span></h1>
     <div class="hero-row">
-      <div>
-        <p class="lede">把你会的东西、做过的作品放出来，认识同样在做东西的人；有想做的东西，招几个人一起把它做出来。</p>
-      </div>
+      <div><p class="lede">把你会的东西、做过的作品放出来，认识同样在做东西的人；有想做的东西，招几个人一起把它做出来。</p></div>
       <div class="ctas">
         <a class="btn solid" href="#people">看看大家在做什么</a>
         <a class="btn marker" href="#recruit">✎ 我要找队友</a>
       </div>
-      <!-- 数字块先藏起来（hidden），等接了真数据再决定要不要露 -->
       <div class="stats" id="stats" hidden>
-        <div class="stat"><div class="n" data-stat="people">8</div><div class="k">张名片</div></div>
-        <div class="stat"><div class="n" data-stat="posts">5</div><div class="k">条招募</div></div>
-        <div class="stat"><div class="n" data-stat="seats">9</div><div class="k">个缺人的位子</div></div>
+        <div class="stat"><div class="n" data-stat="people">–</div><div class="k">张名片</div></div>
+        <div class="stat"><div class="n" data-stat="posts">–</div><div class="k">条招募</div></div>
+        <div class="stat"><div class="n" data-stat="seats">–</div><div class="k">个缺人的位子</div></div>
       </div>
     </div>
   </section>
 
   <section class="block wrap" id="people">
-    <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><a href="#people">全部名片 →</a></div>
+    <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><button class="linkish" data-more="people" hidden>再看 12 张 →</button></div>
     <div class="chips" id="chips"></div>
-    <div class="grid" id="people-grid"></div>
+    <div class="grid" id="people-grid"><div class="state">正在加载名片…</div></div>
   </section>
 
   <section class="block wrap" id="recruit">
-    <div class="sec-head"><h2>Recruit<small>组队 · 招募</small></h2><a href="#recruit">全部招募 →</a></div>
-    <div class="posts" id="posts"></div>
+    <div class="sec-head"><h2>Recruit<small>组队 · 招募</small></h2><button class="linkish" data-more="posts" hidden>再看 10 条 →</button></div>
+    <div class="posts" id="posts"><div class="state">正在加载招募…</div></div>
   </section>
 
   <section class="block wrap" id="how">
@@ -259,69 +274,155 @@
 </footer>
 
 <script>
-// 首页内容：先用试运营那几张样例名片和招募帖（和 API 的 seed-demo 一致）。
-// 接 API 时把这两个数组换成 fetch(API + "/profiles") / fetch(API + "/posts")，
-// 字段名已经按 API 的 snake_case 写好。API 需要在 CORS_ORIGINS 里放行本站。
-const PEOPLE = [
-  { display_name:"林一舟", program:"Master of IT · 2 年级", pitch:"做过两个上线的小程序，最近在学 Rust。想找人一起做校园工具。", tags:["React","Node","TypeScript"], open_to_team:true, template:"dev", color:"#0a4db3" },
-  { display_name:"Chloe Wen", program:"Bachelor of Design · 3 年级", pitch:"品牌与包装方向，作品集刚重做一遍，欢迎来挑刺。", tags:["Figma","插画","UI"], open_to_team:true, template:"gallery", color:"#7b4fd1" },
-  { display_name:"赵思远", program:"BSc Data Science · 2 年级", pitch:"Kaggle 铜牌一枚。会画图会讲故事，缺一个前端搭档。", tags:["Python","数据分析","SQL"], open_to_team:true, template:"cv", color:"#1c7f5f" },
-  { display_name:"Ethan Ma", program:"Master of Architecture · 1 年级", pitch:"Rhino + Grasshopper 参数化，也接效果图。周末想找乐队。", tags:["Rhino","建模","吉他"], open_to_team:false, template:"gallery", color:"#5b6b8c" },
-  { display_name:"许晚晴", program:"Bachelor of Arts (Media) · 3 年级", pitch:"跑过三档校园播客，剪辑和采访都行。想做一档留学生访谈。", tags:["剪辑","写作","公众号"], open_to_team:true, template:"cv", color:"#b8741a" },
-  { display_name:"Kevin Zhou", program:"Master of Engineering (Software) · 2 年级", pitch:"iOS 开发，做过一个上架的日语学习 app。Unihack 找队友。", tags:["Swift","Flutter","产品"], open_to_team:true, template:"dev", color:"#c94f2b" },
-];
-const POSTS = [
-  { title:"墨大二手教材交换小程序", owner:"林一舟", stage:"active", commitment:"到 11 月底 · 每周 2 次线上", description:"解决每学期教材贵、买了用一次的问题。已有原型和 30 个种子用户，缺后端和运营。", tags:["React","Node","产品"], roles:[["前端",1,1],["后端",0,1],["运营/推广",0,2]] },
-  { title:"Unihack 2026 组队", owner:"Kevin Zhou", stage:"recruiting", commitment:"黑客松周末 · 10 月 18–19", description:"去年进了决赛，今年想冲奖。方向偏 AI 工具，已经有两个开发，缺设计和一个会讲的人。", tags:["Swift","Figma","产品"], roles:[["开发",2,2],["UI/UX",0,1],["Pitch / PM",0,1]] },
-  { title:"留学生访谈播客《墨尔本夜话》", owner:"许晚晴", stage:"recruiting", commitment:"双周更 · 长期", description:"每期请一位在墨尔本做有意思事情的中国学生。有设备有剪辑，缺一个搭档主持和一个做封面的。", tags:["剪辑","写作","插画"], roles:[["联合主持",0,1],["封面/视觉",0,1]] },
-  { title:"毕设：AR 校园导览", owner:"Ethan Ma", stage:"idea", commitment:"2027 S1 · 可算学分", description:"把 Parkville 校区做成可交互 AR 地图。想找 Unity 或 Swift 的人一起把它变成能装的 app。", tags:["Unity","Swift","建模"], roles:[["Unity / AR 开发",0,1],["3D 建模",1,2]] },
-];
+// 真数据：同源 /skillwall/ 由 nginx 反代到技能墙 API（和各校的墙一样），所以不需要
+// CORS，也不带任何 token —— 独立站现在只读；写操作（建名片、发招募、申请）都跳到
+// 墨大墙里做，那里有登录。
+const API = "/skillwall";
+const WALL = "https://unimelbwall.com/#view=skill-wall";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+// 来自 API 的每一个 URL 都过这一道再进 href/src（escape 挡不住 javascript:）。
+const isHttp = u => typeof u === "string" && /^https?:\/\//i.test(u);
+const host = u => { try { return new URL(u).hostname; } catch { return ""; } };
+const COLORS = ["#0a4db3", "#7b4fd1", "#1c7f5f", "#5b6b8c", "#b8741a", "#c94f2b", "#0e7490", "#b0306a"];
+const colorFor = s => COLORS[[...String(s)].reduce((n, ch) => n + ch.charCodeAt(0), 0) % COLORS.length];
 const mini = (t, color) => t === "gallery"
   ? `<div class="mini gal">${["#e06f8b","#f4c95d",color,"#4b8bbe","#2fbf9f","#f08a4b"].map(c=>`<div style="background:${c}"></div>`).join("")}</div>`
   : t === "dev" ? `<div class="mini dev"><div class="side"></div><div class="main"><div></div><div></div><div></div><div></div></div></div>`
   : `<div class="mini cv"><div class="nm">Name</div><div class="ln" style="width:60%"></div><div class="ln"></div><div class="ln" style="width:85%"></div><div class="ln"></div><div class="ln" style="width:70%"></div></div>`;
 
-let tag = null, onlyOpen = false;
-function renderPeople() {
-  const tags = [...new Set(PEOPLE.flatMap(p => p.tags))];
+async function api(path) {
+  const r = await fetch(API + path, { headers: { "Accept": "application/json" } });
+  if (!r.ok) throw new Error("http_" + r.status);
+  return r.json();
+}
+
+let people = [], tags = [], posts = [];
+let tag = null, onlyOpen = false, peopleLimit = 12, postsLimit = 6;
+
+function renderChips() {
   document.getElementById("chips").innerHTML =
     `<button class="chip mk ${onlyOpen ? "" : "off"}" data-open>✎ 只看开放组队的</button>` +
-    tags.map(t => `<button class="chip ${tag === t ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("");
-  const list = PEOPLE.filter(p => (!onlyOpen || p.open_to_team) && (!tag || p.tags.includes(tag)));
-  document.getElementById("people-grid").innerHTML = list.map(p => `
-    <article class="card">
-      ${p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
-      <div class="who"><div class="av" style="background:${p.color}">${esc(p.display_name[0])}</div><div><div class="name">${esc(p.display_name)}</div><div class="prog">${esc(p.program)}</div></div></div>
-      <p class="pitch">${esc(p.pitch)}</p>
-      <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
-      <div class="thumb">${mini(p.template, p.color)}</div>
-      <div class="act"><a class="btn" href="#schools">看作品集</a></div>
-    </article>`).join("") || `<p style="color:var(--muted)">没有匹配的人。</p>`;
+    tags.map(t => `<button class="chip ${tag === t.tag ? "on" : ""}" data-tag="${esc(t.tag)}">${esc(t.tag)}</button>`).join("");
 }
-document.getElementById("chips").addEventListener("click", e => {
-  const b = e.target.closest("button"); if (!b) return;
-  if (b.hasAttribute("data-open")) onlyOpen = !onlyOpen; else tag = tag === b.dataset.tag ? null : b.dataset.tag;
-  renderPeople();
-});
-document.getElementById("posts").innerHTML = POSTS.map(p => `
+function renderPeople() {
+  const list = people.filter(p => (!onlyOpen || p.open_to_team) && (!tag || (p.tags || []).includes(tag)));
+  const grid = document.getElementById("people-grid");
+  if (!list.length) { grid.innerHTML = `<div class="state">没有匹配的人。换个标签，或者你就是第一个。</div>`; return; }
+  grid.innerHTML = list.slice(0, peopleLimit).map(p => {
+    const name = p.display_name || "匿名";
+    const color = colorFor(p.slug || name);
+    const site = isHttp(p.site_url) ? p.site_url : "";
+    const cover = isHttp(p.content?.works?.[0]?.image) ? p.content.works[0].image : "";
+    const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
+    return `
+    <article class="card" role="link" tabindex="0" data-slug="${esc(p.slug)}" ${site ? `data-site="${esc(site)}"` : ""} aria-label="${esc(label)}">
+      ${p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
+      <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(p.program || "")}</div></div></div>
+      ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
+      ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site ? `<span class="site">${esc(host(site))} ↗</span>` : ""}</div>
+    </article>`;
+  }).join("");
+  document.querySelector('[data-more="people"]').hidden = list.length <= peopleLimit;
+}
+function renderPosts() {
+  const box = document.getElementById("posts");
+  if (!posts.length) { box.innerHTML = `<div class="state">还没有招募。<a class="btn" href="${WALL}">去墨大墙发一条</a></div>`; return; }
+  box.innerHTML = posts.slice(0, postsLimit).map(p => `
   <article class="proj">
     <div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="stage ${p.stage === "recruiting" ? "rec" : p.stage === "idea" ? "idea" : ""}">${{active:"已开工",recruiting:"找人中",idea:"想法"}[p.stage]}</span><h3>${esc(p.title)}</h3></div>
-      <div class="meta"><span>发起 <b>${esc(p.owner)}</b></span><span>${esc(p.commitment)}</span></div>
-      <p class="desc">${esc(p.description)}</p>
-      <div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="stage ${p.stage === "recruiting" ? "rec" : p.stage === "idea" ? "idea" : ""}">${{active:"已开工",recruiting:"找人中",idea:"想法",closed:"已结束"}[p.stage] || esc(p.stage)}</span><h3>${esc(p.title)}</h3></div>
+      <div class="meta"><span>发起 <b>${esc(p.owner_name || "匿名")}</b></span>${p.commitment ? `<span>${esc(p.commitment)}</span>` : ""}</div>
+      ${isHttp(p.cover_url) ? `<div class="cover"><img src="${esc(p.cover_url)}" alt="" loading="lazy"></div>` : ""}
+      ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ""}
+      ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
     </div>
     <div class="roles">
       <div class="h">缺的人</div>
-      ${p.roles.map(([n, f, need]) => `<div class="role ${f >= need ? "full" : ""}"><span>${esc(n)}</span><span class="cnt">${f}/${need}</span></div>`).join("")}
-      <a class="btn solid" href="#schools">申请加入</a>
+      ${(p.roles || []).map(r => `<div class="role ${r.filled >= r.needed ? "full" : ""}"><span>${esc(r.name)}</span><span class="cnt">${r.filled}/${r.needed}</span></div>`).join("")}
+      <a class="btn solid" href="${WALL}" title="申请要在校园墙里登录后进行">申请加入</a>
     </div>
   </article>`).join("");
-document.querySelector('[data-stat="seats"]').textContent = POSTS.reduce((n, p) => n + p.roles.reduce((m, [, f, need]) => m + (need - f), 0), 0);
-document.querySelector('[data-stat="posts"]').textContent = POSTS.length;
-document.querySelector('[data-stat="people"]').textContent = PEOPLE.length + 2;
-renderPeople();
+  document.querySelector('[data-more="posts"]').hidden = posts.length <= postsLimit;
+}
+function renderStats() {
+  const seats = posts.reduce((n, p) => n + (p.roles || []).reduce((m, r) => m + Math.max(0, r.needed - r.filled), 0), 0);
+  document.querySelector('[data-stat="people"]').textContent = people.length;
+  document.querySelector('[data-stat="posts"]').textContent = posts.length;
+  document.querySelector('[data-stat="seats"]').textContent = seats;
+}
+
+// ---- profile modal: only for cards whose owner has no site of their own ----
+function closeModal() { document.getElementById("overlay")?.remove(); }
+function openModal(title, body) {
+  closeModal();
+  const o = document.createElement("div"); o.className = "overlay"; o.id = "overlay";
+  o.innerHTML = `<div class="modal" role="dialog" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="x" data-close aria-label="关闭">×</button></div><div class="mb">${body}</div></div>`;
+  o.addEventListener("click", e => { if (e.target === o || e.target.closest("[data-close]")) closeModal(); });
+  document.body.appendChild(o);
+}
+function worksHtml(p) {
+  const works = (p.content?.works || []);
+  if (!works.length) return "";
+  const cls = p.template === "gallery" ? "gal" : p.template === "dev" ? "dev" : "cv";
+  return `<div class="works ${cls}">${works.map(w => {
+    const img = isHttp(w.image) ? `<img src="${esc(w.image)}" alt="" loading="lazy">` : "";
+    const link = isHttp(w.url) ? `<a href="${esc(w.url)}" target="_blank" rel="noopener noreferrer">↗ ${esc(host(w.url))}</a>` : "";
+    if (cls === "gal" && !img) return `<div class="work blank"><b>${esc(w.title)}</b></div>`;
+    return `<div class="work">${img}<b>${esc(w.title)}</b>${w.description ? `<div class="d">${esc(w.description)}</div>` : ""}${link}</div>`;
+  }).join("")}</div>`;
+}
+async function openProfile(slug) {
+  openModal("作品集", `<div class="state">正在加载…</div>`);
+  try {
+    const { profile: p } = await api(`/profiles/${encodeURIComponent(slug)}`);
+    const name = p.display_name || "匿名";
+    openModal(name, `
+      <div class="prog">${esc(p.program || "")}</div>
+      ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
+      ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+      ${p.content?.about ? `<p class="about">${esc(p.content.about)}</p>` : ""}
+      ${worksHtml(p)}
+      ${(p.links || []).filter(l => isHttp(l.url)).length ? `<div class="tags">${p.links.filter(l => isHttp(l.url)).map(l => `<a class="tag" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">↗ ${esc(l.label)}</a>`).join("")}</div>` : ""}`);
+  } catch {
+    openModal("作品集", `<div class="state">加载失败，稍后再试。</div>`);
+  }
+}
+
+document.getElementById("chips").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.hasAttribute("data-open")) onlyOpen = !onlyOpen; else tag = tag === b.dataset.tag ? null : b.dataset.tag;
+  peopleLimit = 12; renderChips(); renderPeople();
+});
+document.getElementById("people-grid").addEventListener("click", e => {
+  const card = e.target.closest(".card"); if (!card) return;
+  if (card.dataset.site) window.open(card.dataset.site, "_blank", "noopener,noreferrer");
+  else openProfile(card.dataset.slug);
+});
+document.getElementById("people-grid").addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) { e.preventDefault(); e.target.click(); }
+});
+document.addEventListener("click", e => {
+  const m = e.target.closest("[data-more]"); if (!m) return;
+  if (m.dataset.more === "people") { peopleLimit += 12; renderPeople(); } else { postsLimit += 10; renderPosts(); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+async function load() {
+  const [pp, tt, ps] = await Promise.allSettled([api("/profiles?limit=100"), api("/profiles/tags"), api("/posts?limit=50")]);
+  if (pp.status === "fulfilled") people = pp.value.items || [];
+  if (tt.status === "fulfilled") tags = tt.value.items || [];
+  if (ps.status === "fulfilled") posts = ps.value.items || [];
+  if (pp.status !== "fulfilled" && ps.status !== "fulfilled") {
+    const retry = `<div class="state">技能墙暂时连不上。<button class="btn" data-retry>重试</button></div>`;
+    document.getElementById("people-grid").innerHTML = retry;
+    document.getElementById("posts").innerHTML = retry;
+    return;
+  }
+  renderChips(); renderPeople(); renderPosts(); renderStats();
+}
+document.addEventListener("click", e => { if (e.target.closest("[data-retry]")) load(); });
+load();
 </script>
 </body>
 </html>

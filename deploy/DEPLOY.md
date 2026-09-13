@@ -35,6 +35,16 @@ ssh rambo@100.64.116.93 'cd ~/skill-wall && docker compose up -d --build api'
 
 新增迁移就是往 `db/migrations/` 加一个编号更大的 `.sql`，容器重启时自动应用。
 
+## 独立站首页（skills.talkwalll.com）
+
+静态页在 `web/index.html`，线上放 forum-app 的 `~/forum-app/skills/index.html`（forum-web 把 `~/forum-app` 挂成 `/srv`）。
+nginx 的 server 块在墙仓库 `deploy/nginx-forum-app.conf` 里（`server_name skills.talkwalll.com`，同源 `/skillwall/` 反代），
+`*.talkwalll.com` 的 DNS 和隧道通配本来就指到这台机。更新只要拷文件：
+
+```bash
+ssh rambo@100.64.116.93 'mkdir -p ~/forum-app/skills' && scp -i ~/.ssh/unimelb_deploy web/index.html rambo@100.64.116.93:~/forum-app/skills/index.html
+```
+
 ## 备份
 
 每晚 04:20 由 crontab 跑 `scripts/backup.sh`（库 dump + 上传卷，各留 14 份，在 `~/skill-wall/backups/`），forum-app 上已装。手动：
