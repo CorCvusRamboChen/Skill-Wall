@@ -64,11 +64,18 @@
   .btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .btn.solid:hover { filter: brightness(1.15); }
   .btn.marker { background: var(--marker); color: var(--marker-ink); border-color: var(--marker); }
-  @media (max-width: 720px) { .top nav { display: none; } }
+  .wordmark, .btn { white-space: nowrap; }
+  @media (max-width: 720px) {
+    .top nav { display: none; }
+    .top .wrap { gap: 10px; }
+    .top .btn:not(.solid) { display: none; } /* one call to action is enough on a phone */
+    .top .btn { padding: 0 12px; }
+  }
 
   /* ---- hero ---- */
   .hero { padding: 56px 0 28px; }
-  .hero .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--muted); display: flex; gap: 14px; align-items: center; }
+  .hero .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--muted); display: flex; gap: 14px; row-gap: 6px; align-items: center; flex-wrap: wrap; }
+  .hero .eyebrow > * { white-space: nowrap; }
   .hero .eyebrow b { color: var(--marker-ink); background: var(--marker); padding: 1px 8px; border-radius: 3px; font-weight: 600; }
   .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 14px 0 0; white-space: nowrap; overflow: hidden; }
   .giant .alt { color: transparent; -webkit-text-stroke: 2px var(--ink); }
