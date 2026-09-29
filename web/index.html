@@ -326,10 +326,12 @@ function renderPeople() {
       <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(p.program || "")}</div></div></div>
       ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
       ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
-      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site ? `<span class="site">${esc(host(site))} ↗</span>` : ""}</div>
+      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site && !cover ? `<span class="site">${esc(host(site))} ↗</span>` : ""}</div>
     </article>`;
   }).join("");
-  document.querySelector('[data-more="people"]').hidden = list.length <= peopleLimit;
+  const more = document.querySelector('[data-more="people"]');
+  more.hidden = list.length <= peopleLimit;
+  more.textContent = `再看 ${Math.min(12, list.length - peopleLimit)} 张 →`;
 }
 function renderPosts() {
   const box = document.getElementById("posts");
