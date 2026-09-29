@@ -1,4 +1,8 @@
 // Public name cards — the 找人 tab. Only published cards are listed.
+//
+// realm = 'showcase' rows are curated examples (notable alumni and their public
+// websites, see db/seed-showcase.sql), not members: no wall issues tokens for
+// that realm, so nobody can log in as them. They always sort after real people.
 import { Hono } from "hono";
 import { q } from "../db.mjs";
 import { str, int } from "../validate.mjs";
@@ -9,6 +13,15 @@ const CARD = `
   p.user_id, p.slug, p.program, p.pitch, p.tags, p.open_to_team, p.open_to_friends,
   p.template, p.site_url, p.links, p.updated_at,
   u.display_name, u.avatar_url, u.school, u.realm`;
+
+// The listing carries only the first work's image, in the same shape the
+// detail endpoint uses (content.works[0].image), so a card can show a cover
+// without every card shipping its whole portfolio.
+const LIST_COVER = `
+  case when p.content #>> '{works,0,image}' is null then null
+       else jsonb_build_object('works', jsonb_build_array(
+              jsonb_build_object('image', p.content #>> '{works,0,image}')))
+  end as content`;
 
 profiles.get("/", async (c) => {
   const tag = str(c.req.query("tag"), "tag", { max: 24 });
@@ -29,9 +42,9 @@ profiles.get("/", async (c) => {
   }
   params.push(limit, offset);
   const { rows } = await q(
-    `select ${CARD} from profiles p join users u on u.id = p.user_id
+    `select ${CARD}, ${LIST_COVER} from profiles p join users u on u.id = p.user_id
      where ${where.join(" and ")}
-     order by p.updated_at desc
+     order by (u.realm = 'showcase'), p.updated_at desc
      limit $${params.length - 1} offset $${params.length}`,
     params
   );
