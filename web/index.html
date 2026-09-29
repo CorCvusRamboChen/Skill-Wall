@@ -117,6 +117,10 @@
   .tags { display: flex; gap: 6px; flex-wrap: wrap; }
   .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text); text-decoration: none; }
   .mark { position: absolute; top: 16px; right: 16px; padding: 2px 8px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-size: 11px; font-weight: 800; }
+  /* Curated example, not a member: outlined instead of filled, so it never
+     reads as the same kind of mark as 开放组队. */
+  .mark.pick { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); font-weight: 700; }
+  .legend { margin: -6px 0 14px; font-size: 12.5px; color: var(--muted); }
   .thumb { position: relative; margin-top: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); aspect-ratio: 16/8; overflow: hidden; padding: 10px; }
   .thumb img.cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .thumb .site { position: absolute; left: 8px; bottom: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); background: var(--surface); padding: 1px 6px; border-radius: 3px; }
@@ -229,6 +233,7 @@
   <section class="block wrap" id="people">
     <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><button class="linkish" data-more="people" hidden>再看 12 张 →</button></div>
     <div class="chips" id="chips"></div>
+    <p class="legend" id="legend" hidden>带「精选校友」标的名片是我们整理的墨大校友公开网站，资料来自维基百科，不是本人入驻；点名片直接去他们的网站。</p>
     <div class="grid" id="people-grid"><div class="state">正在加载名片…</div></div>
   </section>
 
@@ -307,6 +312,7 @@ function renderChips() {
 function renderPeople() {
   const list = people.filter(p => (!onlyOpen || p.open_to_team) && (!tag || (p.tags || []).includes(tag)));
   const grid = document.getElementById("people-grid");
+  document.getElementById("legend").hidden = !list.some(p => p.realm === "showcase");
   if (!list.length) { grid.innerHTML = `<div class="state">没有匹配的人。换个标签，或者你就是第一个。</div>`; return; }
   grid.innerHTML = list.slice(0, peopleLimit).map(p => {
     const name = p.display_name || "匿名";
@@ -316,7 +322,7 @@ function renderPeople() {
     const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
     return `
     <article class="card" role="link" tabindex="0" data-slug="${esc(p.slug)}" ${site ? `data-site="${esc(site)}"` : ""} aria-label="${esc(label)}">
-      ${p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
+      ${p.realm === "showcase" ? `<span class="mark pick" title="我们整理的校友公开网站，非本人入驻">精选校友</span>` : p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
       <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(p.program || "")}</div></div></div>
       ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
       ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}

@@ -1,0 +1,8 @@
+# regenerable crawl output
+alumni_all.json
+wiki_people.json
+candidates.json
+facts*.json
+manifest.json
+seed-showcase.sql
+tiles/*.html
