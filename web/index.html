@@ -233,7 +233,7 @@
   <section class="block wrap" id="people">
     <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><button class="linkish" data-more="people" hidden>再看 12 张 →</button></div>
     <div class="chips" id="chips"></div>
-    <p class="legend" id="legend" hidden>带「精选校友」标的名片是我们整理的墨大校友公开网站，资料来自维基百科，不是本人入驻；点名片直接去他们的网站。</p>
+    <p class="legend" id="legend" hidden>带「精选校友」标的名片是我们整理的墨大校友公开网站：资料来自维基百科等公开页面，封面是他们网站首页的截图，不是本人入驻；点名片直接去他们的网站。</p>
     <div class="grid" id="people-grid"><div class="state">正在加载名片…</div></div>
   </section>
 
@@ -320,13 +320,16 @@ function renderPeople() {
     const site = isHttp(p.site_url) ? p.site_url : "";
     const cover = isHttp(p.content?.works?.[0]?.image) ? p.content.works[0].image : "";
     const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
+    // 精选示例的「专业」一栏自带「· 精选校友」（墙里那一页没有角标，靠这几个字说明）；
+    // 这里右上角已经有角标了，不重复。
+    const prog = p.realm === "showcase" ? String(p.program || "").replace(/ · 精选校友$/, "") : (p.program || "");
     return `
     <article class="card" role="link" tabindex="0" data-slug="${esc(p.slug)}" ${site ? `data-site="${esc(site)}"` : ""} aria-label="${esc(label)}">
       ${p.realm === "showcase" ? `<span class="mark pick" title="我们整理的校友公开网站，非本人入驻">精选校友</span>` : p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
-      <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(p.program || "")}</div></div></div>
+      <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(prog)}</div></div></div>
       ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
       ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
-      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site && !cover ? `<span class="site">${esc(host(site))} ↗</span>` : ""}</div>
+      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site ? `<span class="site">${esc(host(site).replace(/^www\./, ""))} ↗</span>` : ""}</div>
     </article>`;
   }).join("");
   const more = document.querySelector('[data-more="people"]');

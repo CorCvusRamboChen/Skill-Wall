@@ -5,4 +5,8 @@ candidates.json
 facts*.json
 manifest.json
 seed-showcase.sql
-tiles/*.html
+# screenshots of other people's sites and the covers built from them: retaken on
+# demand, and not ours to keep a second copy of in a public repository
+shots/
+covers/
+tiles/
