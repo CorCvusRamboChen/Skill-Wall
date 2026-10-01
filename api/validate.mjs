@@ -84,3 +84,29 @@ export function works(v, field = "works") {
     image: url(w?.image, `${field}[${i}].image`)
   }));
 }
+
+// Experience-type people (commerce, law, science…) have a CV, not a portfolio.
+// A card may carry up to 8 positions and 4 schools; each line is short text
+// only — the renderer never sees HTML.
+export function experiences(v, field = "experiences") {
+  if (v == null) return [];
+  if (!Array.isArray(v)) bad(field, "must be an array");
+  if (v.length > 8) bad(field, "max 8");
+  return v.map((e, i) => ({
+    org: str(e?.org, `${field}[${i}].org`, { max: 80, min: 1, required: true }),
+    role: str(e?.role, `${field}[${i}].role`, { max: 80 }),
+    period: str(e?.period, `${field}[${i}].period`, { max: 40 }),
+    summary: str(e?.summary, `${field}[${i}].summary`, { max: 200 })
+  }));
+}
+
+export function education(v, field = "education") {
+  if (v == null) return [];
+  if (!Array.isArray(v)) bad(field, "must be an array");
+  if (v.length > 4) bad(field, "max 4");
+  return v.map((e, i) => ({
+    school: str(e?.school, `${field}[${i}].school`, { max: 80, min: 1, required: true }),
+    degree: str(e?.degree, `${field}[${i}].degree`, { max: 80 }),
+    period: str(e?.period, `${field}[${i}].period`, { max: 40 })
+  }));
+}

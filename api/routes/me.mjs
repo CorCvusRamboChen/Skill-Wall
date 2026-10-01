@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 import { q } from "../db.mjs";
 import { requireUser } from "../auth.mjs";
-import { str, tags, oneOf, bool, url, slugify, works } from "../validate.mjs";
+import { str, tags, oneOf, bool, url, slugify, works, experiences, education } from "../validate.mjs";
 
 export const TEMPLATES = ["cv", "gallery", "dev"];
 const me = new Hono();
@@ -36,7 +36,9 @@ me.put("/profile", async (c) => {
   const raw = b.content && typeof b.content === "object" && !Array.isArray(b.content) ? b.content : {};
   const content = {
     about: str(raw.about, "content.about", { max: 600 }),
-    works: works(raw.works, "content.works")
+    works: works(raw.works, "content.works"),
+    experiences: experiences(raw.experiences, "content.experiences"),
+    education: education(raw.education, "content.education")
   };
   const published = bool(b.published, "published", true);
 

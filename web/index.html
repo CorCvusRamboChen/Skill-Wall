@@ -222,6 +222,13 @@
   .work a { display: inline-block; margin-top: 4px; font-size: 13px; color: var(--ink-2); }
   .work img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; margin-bottom: 8px; }
   .work.blank { aspect-ratio: 4/3; display: grid; place-items: center; text-align: center; }
+  /* 经历 / 教育：简历式的一行一条，给没有作品的人 */
+  .cv { display: grid; gap: 8px; }
+  .cv h4 { margin: 4px 0 0; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); }
+  .cv .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 14px; }
+  .cv .row b { color: var(--ink); }
+  .cv .row .when { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .cv .row .sub { grid-column: 1 / -1; color: var(--muted); font-size: 13px; }
 
   footer { padding: 40px 0 60px; color: var(--muted); font-size: 13px; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 20px; }
@@ -469,6 +476,16 @@ function worksHtml(p) {
     return `<div class="work">${img}<b>${esc(w.title)}</b>${w.description ? `<div class="d">${esc(w.description)}</div>` : ""}${link}</div>`;
   }).join("")}</div>`;
 }
+function cvHtml(p) {
+  const ex = (p.content?.experiences || []).filter(e => e && e.org);
+  const ed = (p.content?.education || []).filter(e => e && e.school);
+  if (!ex.length && !ed.length) return "";
+  const row = (title, when, sub) => `<div class="row"><b>${esc(title)}</b>${when ? `<span class="when">${esc(when)}</span>` : ""}${sub ? `<div class="sub">${esc(sub)}</div>` : ""}</div>`;
+  return `<div class="cv">
+    ${ex.length ? `<h4>经历</h4>${ex.map(e => row(e.role ? `${e.role} · ${e.org}` : e.org, e.period, e.summary)).join("")}` : ""}
+    ${ed.length ? `<h4>教育</h4>${ed.map(e => row(e.school, e.period, e.degree)).join("")}` : ""}
+  </div>`;
+}
 async function openProfile(slug) {
   openModal("作品集", `<div class="state">正在加载…</div>`);
   try {
@@ -479,6 +496,7 @@ async function openProfile(slug) {
       ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
       ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
       ${p.content?.about ? `<p class="about">${esc(p.content.about)}</p>` : ""}
+      ${cvHtml(p)}
       ${worksHtml(p)}
       ${(p.links || []).filter(l => isHttp(l.url)).length ? `<div class="tags">${p.links.filter(l => isHttp(l.url)).map(l => `<a class="tag" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">↗ ${esc(l.label)}</a>`).join("")}</div>` : ""}`);
   } catch {
