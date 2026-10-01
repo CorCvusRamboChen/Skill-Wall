@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Skill Wall 技能墙</title>
-<meta name="description" content="把你会的东西、做过的作品放出来，认识同样在做东西的人，招几个人一起把想法做出来。澳洲各校学生的技能墙。">
+<title>墨大校友墙 · Skill Wall</title>
+<meta name="description" content="从墨大 / VCA 出去的人，现在在做什么：按届、按领域看校友的网站和作品；在校的你也可以把自己的作品挂上来，找同样在做东西的人。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
 <style>
@@ -56,6 +56,7 @@
   .top .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
   .wordmark { font-family: var(--giant); font-size: 18px; letter-spacing: -.02em; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
   .wordmark i { width: 10px; height: 22px; background: var(--marker); display: inline-block; transform: skewX(-12deg); }
+  .wordmark small { font-family: var(--sans); font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0; }
   .top nav { display: flex; gap: 22px; margin-left: 8px; }
   .top nav a { text-decoration: none; color: var(--muted); font-weight: 500; }
   .top nav a:hover { color: var(--ink); }
@@ -71,14 +72,17 @@
     .top .wrap { gap: 10px; }
     .top .btn:not(.solid) { display: none; }
     .top .btn { padding: 0 12px; }
+    .wordmark small { display: none; }
   }
 
   /* ---- hero ---- */
   .hero { padding: 56px 0 28px; }
-  .giant { font-family: var(--giant); font-size: clamp(64px, 12.5vw, 176px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 0; white-space: nowrap; overflow: hidden; }
+  .giant { font-family: var(--giant); font-size: clamp(56px, 10.2vw, 146px); line-height: .88; letter-spacing: -.035em; text-transform: uppercase; color: var(--ink); margin: 0; white-space: nowrap; overflow: hidden; }
   .giant .alt { color: transparent; -webkit-text-stroke: 2px var(--ink); }
   .hero-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: end; margin-top: 22px; }
-  .hero p.lede { font-size: 18px; max-width: 34em; margin: 0; color: var(--text); }
+  .hero h2.zh { margin: 0 0 10px; font-size: 26px; font-weight: 900; color: var(--ink); letter-spacing: .02em; }
+  .hero h2.zh mark { background: var(--marker); color: var(--marker-ink); padding: 0 6px; }
+  .hero p.lede { font-size: 17px; max-width: 36em; margin: 0; color: var(--text); }
   .hero .ctas { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
   .hero .ctas .btn { min-height: 46px; padding: 0 20px; font-size: 15px; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -94,18 +98,36 @@
   .sec-head h2 small { font-family: var(--sans); font-weight: 700; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--muted); margin-left: 12px; }
   .sec-head a, .sec-head button.linkish { color: var(--muted); text-decoration: none; font-weight: 600; background: none; border: 0; padding: 0; }
   .sec-head a:hover, .sec-head button.linkish:hover { color: var(--ink); }
+  .sec-head .span { font-family: var(--mono); font-size: 13px; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 560px) { .sec-head { flex-wrap: wrap; } .sec-head .span { width: 100%; } }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .chip { min-height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12.5px; font-weight: 600; }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip.mk { background: var(--marker); color: var(--marker-ink); border-color: var(--marker); }
   .chip.mk.off { background: var(--surface); color: var(--muted); border-color: var(--line); }
+  .chip.yr { font-family: var(--mono); border-radius: 4px; }
+  .chips .sep { width: 1px; background: var(--line); margin: 4px 6px; }
   .state { color: var(--muted); padding: 28px; text-align: center; border: 1px dashed var(--line); border-radius: 14px; background: var(--surface); grid-column: 1 / -1; }
   .state .btn { margin-left: 8px; }
 
+  /* 校友按年代成行：左边一个描边的年代数字，右边这一代人的名片 */
+  .decade { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 24px; padding: 22px 0 26px; border-top: 1px solid var(--line); }
+  .decade .y { position: sticky; top: 76px; align-self: start; }
+  .decade .y b { display: block; font-family: var(--giant); font-size: 46px; line-height: 1; letter-spacing: -.03em; color: transparent; -webkit-text-stroke: 2px var(--ink); }
+  .decade .y small { display: block; margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  @media (max-width: 760px) {
+    .decade { grid-template-columns: 1fr; gap: 12px; }
+    .decade .y { position: static; display: flex; align-items: baseline; gap: 12px; }
+    .decade .y b { font-size: 36px; }
+    .decade .y small { margin: 0; }
+  }
+
   /* people cards — the whole card is the click target */
   .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .decade .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 1100px) { .decade .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .grid, .decade .grid { grid-template-columns: 1fr; } }
   .card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 1px 2px rgba(11,20,64,.05); transition: transform .15s, box-shadow .15s; cursor: pointer; }
   .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
   .who { display: flex; gap: 12px; align-items: center; padding-right: 84px; }
@@ -117,9 +139,8 @@
   .tags { display: flex; gap: 6px; flex-wrap: wrap; }
   .tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text); text-decoration: none; }
   .mark { position: absolute; top: 16px; right: 16px; padding: 2px 8px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-size: 11px; font-weight: 800; }
-  /* Curated example, not a member: outlined instead of filled, so it never
-     reads as the same kind of mark as 开放组队. */
-  .mark.pick { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); font-weight: 700; }
+  /* 校友名片的角标是「哪一届」：墨色底、等宽字，跟在校生的黄色「开放组队」一眼分开 */
+  .mark.year { background: var(--ink); color: var(--paper); font-family: var(--mono); font-weight: 600; letter-spacing: .02em; }
   .legend { margin: -6px 0 14px; font-size: 12.5px; color: var(--muted); }
   .thumb { position: relative; margin-top: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); aspect-ratio: 16/8; overflow: hidden; padding: 10px; }
   .thumb img.cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -136,6 +157,12 @@
   .mini.dev .side { background: #0d1117; }
   .mini.dev .main { padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; align-content: start; }
   .mini.dev .main div { border: 1px solid #b8c0cc; background: #eef1f5; border-radius: 3px; height: 22px; }
+
+  /* 在校生那一栏空着的时候：一张虚线的「你的名片」占位 */
+  .you { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 26px 28px; border: 1px dashed var(--line); border-radius: 14px; background: var(--surface); }
+  .you h3 { margin: 0 0 4px; font-size: 18px; color: var(--ink); }
+  .you p { margin: 0; color: var(--muted); font-size: 14px; max-width: 44em; }
+  @media (max-width: 640px) { .you { grid-template-columns: 1fr; } }
 
   /* recruit cards */
   .posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
@@ -205,22 +232,25 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <a class="wordmark" href="#"><i></i>SKILL WALL</a>
-    <nav><a href="#people">找人</a><a href="#recruit">组队</a><a href="#how">怎么玩</a><a href="#schools">学校</a></nav>
+    <a class="wordmark" href="#"><i></i>ALUMNI WALL <small>墨大校友墙</small></a>
+    <nav><a href="#alumni">校友</a><a href="#students">在校</a><a href="#recruit">组队</a><a href="#schools">学校</a></nav>
     <span class="spacer"></span>
     <a class="btn" href="#schools">用校园墙账号登录</a>
-    <a class="btn solid" href="https://unimelbwall.com/#view=skill-wall">+ 创建我的主页</a>
+    <a class="btn solid" href="https://unimelbwall.com/#view=skill-wall">+ 挂上我的名片</a>
   </div>
 </header>
 
 <main>
   <section class="hero wrap">
-    <h1 class="giant">SKILL <span class="alt">WALL</span></h1>
+    <h1 class="giant">ALUMNI <span class="alt">WALL</span></h1>
     <div class="hero-row">
-      <div><p class="lede">把你会的东西、做过的作品放出来，认识同样在做东西的人；有想做的东西，招几个人一起把它做出来。</p></div>
+      <div>
+        <h2 class="zh">从这所学校出去的人，<mark>现在在做什么</mark></h2>
+        <p class="lede">画室、片场、事务所、巴黎的时装屋。墨大和 VCA 出来的人，按哪一届、按什么领域，一张张看过去，点进去就是他们自己的网站。在校的你也把作品挂上来——几年后这面墙上有你。</p>
+      </div>
       <div class="ctas">
-        <a class="btn solid" href="#people">看看大家在做什么</a>
-        <a class="btn marker" href="#recruit">✎ 我要找队友</a>
+        <a class="btn solid" href="#alumni">看校友</a>
+        <a class="btn marker" href="#students">✎ 挂上我的名片</a>
       </div>
       <div class="stats" id="stats" hidden>
         <div class="stat"><div class="n" data-stat="people">–</div><div class="k">张名片</div></div>
@@ -230,10 +260,16 @@
     </div>
   </section>
 
-  <section class="block wrap" id="people">
-    <div class="sec-head"><h2>People<small>找人 · 技能与作品</small></h2><button class="linkish" data-more="people" hidden>再看 12 张 →</button></div>
+  <section class="block wrap" id="alumni">
+    <div class="sec-head"><h2>Alumni<small>校友 · 他们现在在做什么</small></h2><span class="span" id="alumni-span"></span></div>
+    <div class="chips" id="alumni-chips"></div>
+    <p class="legend" id="legend" hidden>这些名片是我们整理的墨大校友公开网站：资料来自维基百科等公开页面，封面是他们网站首页的截图，不是本人入驻；点名片直接去他们的网站。要更正或撤下，站内「意见反馈」留言即可。</p>
+    <div id="alumni-list"><div class="state">正在加载…</div></div>
+  </section>
+
+  <section class="block wrap" id="students">
+    <div class="sec-head"><h2>Students<small>在校 · 技能与作品</small></h2><button class="linkish" data-more="people" hidden>再看 12 张 →</button></div>
     <div class="chips" id="chips"></div>
-    <p class="legend" id="legend" hidden>带「精选校友」标的名片是我们整理的墨大校友公开网站：资料来自维基百科等公开页面，封面是他们网站首页的截图，不是本人入驻；点名片直接去他们的网站。</p>
     <div class="grid" id="people-grid"><div class="state">正在加载名片…</div></div>
   </section>
 
@@ -245,7 +281,7 @@
   <section class="block wrap" id="how">
     <div class="sec-head"><h2>How<small>怎么玩</small></h2></div>
     <div class="steps">
-      <div class="step"><div class="num">1</div><h3>放一张名片</h3><p>专业、一句话、五个技能标签，再选一个作品集模板或者贴你自己的网站。三分钟。</p></div>
+      <div class="step"><div class="num">1</div><h3>挂一张名片</h3><p>专业、一句话、几个技能标签，再贴你自己的网站，或者用模板搭一个作品集。三分钟，和上面那些校友一样的一张名片。</p></div>
       <div class="step"><div class="num">2</div><h3>打开「开放组队」</h3><p>打开这个开关，别人在找队友的时候就能看到你。不想被找就关上，名片照常在。</p></div>
       <div class="step"><div class="num">3</div><h3>发招募或申请加入</h3><p>写清楚缺什么人、要多少个、投入多少时间。申请人点一下，你在管理页里接受或拒绝。</p></div>
     </div>
@@ -255,7 +291,7 @@
     <div class="schools">
       <div>
         <h2>Log in with your wall</h2>
-        <p>技能墙不另开账号。用你学校的校园墙账号登录即可，八所学校共用同一面墙，跨校也能组队。现在只对墨大开放试运营，其余学校陆续打开。</p>
+        <p>校友墙不另开账号。用你学校的校园墙账号登录即可，八所学校共用同一面墙，跨校也能组队。现在只对墨大开放试运营，其余学校陆续打开。</p>
       </div>
       <div class="school-list">
         <a class="live" href="https://unimelbwall.com/#view=skill-wall">墨大墙 <small>LIVE</small></a>
@@ -287,7 +323,7 @@ const WALL = "https://unimelbwall.com/#view=skill-wall";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 // 来自 API 的每一个 URL 都过这一道再进 href/src（escape 挡不住 javascript:）。
 const isHttp = u => typeof u === "string" && /^https?:\/\//i.test(u);
-const host = u => { try { return new URL(u).hostname; } catch { return ""; } };
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
 const COLORS = ["#0a4db3", "#7b4fd1", "#1c7f5f", "#5b6b8c", "#b8741a", "#c94f2b", "#0e7490", "#b0306a"];
 const colorFor = s => COLORS[[...String(s)].reduce((n, ch) => n + ch.charCodeAt(0), 0) % COLORS.length];
 const mini = (t, color) => t === "gallery"
@@ -303,36 +339,86 @@ async function api(path) {
 
 let people = [], tags = [], posts = [];
 let tag = null, onlyOpen = false, peopleLimit = 12, postsLimit = 6;
+let decade = null, alumniTag = null;
 
-function renderChips() {
-  document.getElementById("chips").innerHTML =
-    `<button class="chip mk ${onlyOpen ? "" : "off"}" data-open>✎ 只看开放组队的</button>` +
-    tags.map(t => `<button class="chip ${tag === t.tag ? "on" : ""}" data-tag="${esc(t.tag)}">${esc(t.tag)}</button>`).join("");
+// 校友名片的「专业」一栏是 build 脚本拼的「所学专业 · 哪一届 · 精选校友」，
+// 这里拆回去：角标放哪一届，名字下面放专业，年代用来分行。
+function studyOf(p) {
+  const seg = String(p.program || "").split(" · ");
+  const edu = seg[0] || "", cohort = seg[1] || "";
+  const m = cohort.match(/(\d{4})/);
+  const year = m ? Number(m[1]) : null;
+  const badge = !cohort || /未公开|不详/.test(cohort) ? "年份不详"
+    : cohort.replace(/^(\d{2})(\d{2}) 年代末就读$/, "$2 年代末").replace(/ 就读$/, "");
+  return { edu, cohort, year, badge, decade: year ? `${Math.floor(year / 10) * 10}s` : "年份不详" };
 }
-function renderPeople() {
-  const list = people.filter(p => (!onlyOpen || p.open_to_team) && (!tag || (p.tags || []).includes(tag)));
-  const grid = document.getElementById("people-grid");
-  document.getElementById("legend").hidden = !list.some(p => p.realm === "showcase");
-  if (!list.length) { grid.innerHTML = `<div class="state">没有匹配的人。换个标签，或者你就是第一个。</div>`; return; }
-  grid.innerHTML = list.slice(0, peopleLimit).map(p => {
-    const name = p.display_name || "匿名";
-    const color = colorFor(p.slug || name);
-    const site = isHttp(p.site_url) ? p.site_url : "";
-    const cover = isHttp(p.content?.works?.[0]?.image) ? p.content.works[0].image : "";
-    const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
-    // 精选示例的「专业」一栏自带「· 精选校友」（墙里那一页没有角标，靠这几个字说明）；
-    // 这里右上角已经有角标了，不重复。
-    const prog = p.realm === "showcase" ? String(p.program || "").replace(/ · 精选校友$/, "") : (p.program || "");
-    return `
+
+function cardHtml(p) {
+  const name = p.display_name || "匿名";
+  const color = colorFor(p.slug || name);
+  const site = isHttp(p.site_url) ? p.site_url : "";
+  const cover = isHttp(p.content?.works?.[0]?.image) ? p.content.works[0].image : "";
+  const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
+  const alum = p.realm === "showcase" ? studyOf(p) : null;
+  const mark = alum ? `<span class="mark year" title="${esc(alum.cohort)}">${esc(alum.badge)}</span>`
+    : p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : "";
+  // 整栏都是校友，名片上不再逐张写「精选校友」，栏目下方的说明管这件事。
+  const prog = alum ? alum.edu : (p.program || "");
+  return `
     <article class="card" role="link" tabindex="0" data-slug="${esc(p.slug)}" ${site ? `data-site="${esc(site)}"` : ""} aria-label="${esc(label)}">
-      ${p.realm === "showcase" ? `<span class="mark pick" title="我们整理的校友公开网站，非本人入驻">精选校友</span>` : p.open_to_team ? `<span class="mark">✎ 开放组队</span>` : ""}
+      ${mark}
       <div class="who"><div class="av" style="background:${color}">${isHttp(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="">` : esc(name.trim().slice(0, 1))}</div><div><div class="name">${esc(name)}</div><div class="prog">${esc(prog)}</div></div></div>
       ${p.pitch ? `<p class="pitch">${esc(p.pitch)}</p>` : ""}
       ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
-      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site ? `<span class="site">${esc(host(site).replace(/^www\./, ""))} ↗</span>` : ""}</div>
+      <div class="thumb">${cover ? `<img class="cover" src="${esc(cover)}" alt="" loading="lazy">` : mini(p.template, color)}${site ? `<span class="site">${esc(host(site))} ↗</span>` : ""}</div>
     </article>`;
+}
+
+// ---- 校友：按年代分行，最近的一代在最上面 ----
+function renderAlumni() {
+  const all = people.filter(p => p.realm === "showcase");
+  const box = document.getElementById("alumni-list");
+  document.getElementById("legend").hidden = !all.length;
+  if (!all.length) { box.innerHTML = `<div class="state">校友名片整理中。</div>`; document.getElementById("alumni-chips").innerHTML = ""; return; }
+
+  const years = all.map(p => studyOf(p).year).filter(Boolean);
+  document.getElementById("alumni-span").textContent = years.length ? `${Math.min(...years)}–${Math.max(...years)} 届 · ${all.length} 人` : `${all.length} 人`;
+
+  const decades = [...new Set(all.map(p => studyOf(p).decade))].sort((a, b) => (b === "年份不详" ? -1 : a === "年份不详" ? 1 : b.localeCompare(a)));
+  const count = {};
+  all.forEach(p => (p.tags || []).forEach(t => { count[t] = (count[t] || 0) + 1; }));
+  const fields = Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh")).slice(0, 14);
+  document.getElementById("alumni-chips").innerHTML =
+    decades.map(d => `<button class="chip yr ${decade === d ? "on" : ""}" data-decade="${esc(d)}">${esc(d)}</button>`).join("") +
+    `<span class="sep"></span>` +
+    fields.map(([t]) => `<button class="chip ${alumniTag === t ? "on" : ""}" data-atag="${esc(t)}">${esc(t)}</button>`).join("");
+
+  const list = all.filter(p => (!decade || studyOf(p).decade === decade) && (!alumniTag || (p.tags || []).includes(alumniTag)));
+  if (!list.length) { box.innerHTML = `<div class="state">这个筛选下没有人。</div>`; return; }
+  box.innerHTML = decades.filter(d => list.some(p => studyOf(p).decade === d)).map(d => {
+    const rows = list.filter(p => studyOf(p).decade === d).sort((a, b) => (studyOf(b).year || 0) - (studyOf(a).year || 0));
+    return `<div class="decade"><div class="y"><b>${esc(d)}</b><small>${rows.length} 人</small></div><div class="grid">${rows.map(cardHtml).join("")}</div></div>`;
   }).join("");
+}
+
+// ---- 在校：真实名片 ----
+function renderChips() {
+  const own = people.filter(p => p.realm !== "showcase");
+  const used = new Set(own.flatMap(p => p.tags || []));
+  document.getElementById("chips").innerHTML = own.length ?
+    `<button class="chip mk ${onlyOpen ? "" : "off"}" data-open>✎ 只看开放组队的</button>` +
+    tags.filter(t => used.has(t.tag)).map(t => `<button class="chip ${tag === t.tag ? "on" : ""}" data-tag="${esc(t.tag)}">${esc(t.tag)}</button>`).join("") : "";
+}
+function renderPeople() {
+  const list = people.filter(p => p.realm !== "showcase" && (!onlyOpen || p.open_to_team) && (!tag || (p.tags || []).includes(tag)));
+  const grid = document.getElementById("people-grid");
   const more = document.querySelector('[data-more="people"]');
+  if (!list.length) {
+    grid.innerHTML = `<div class="you" style="grid-column:1/-1"><div><h3>${tag || onlyOpen ? "这个筛选下还没有人" : "还没有在校生的名片"}</h3><p>和上面那些校友一样的一张名片：专业、一句话、几个技能标签，贴你自己的网站或者用模板搭一个作品集。用墨大墙的账号登录就能挂。</p></div><a class="btn marker" href="${WALL}">✎ 挂上我的名片</a></div>`;
+    more.hidden = true;
+    return;
+  }
+  grid.innerHTML = list.slice(0, peopleLimit).map(cardHtml).join("");
   more.hidden = list.length <= peopleLimit;
   more.textContent = `再看 ${Math.min(12, list.length - peopleLimit)} 张 →`;
 }
@@ -400,19 +486,27 @@ async function openProfile(slug) {
   }
 }
 
+document.getElementById("alumni-chips").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.decade) decade = decade === b.dataset.decade ? null : b.dataset.decade;
+  else alumniTag = alumniTag === b.dataset.atag ? null : b.dataset.atag;
+  renderAlumni();
+});
 document.getElementById("chips").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.hasAttribute("data-open")) onlyOpen = !onlyOpen; else tag = tag === b.dataset.tag ? null : b.dataset.tag;
   peopleLimit = 12; renderChips(); renderPeople();
 });
-document.getElementById("people-grid").addEventListener("click", e => {
-  const card = e.target.closest(".card"); if (!card) return;
-  if (card.dataset.site) window.open(card.dataset.site, "_blank", "noopener,noreferrer");
-  else openProfile(card.dataset.slug);
-});
-document.getElementById("people-grid").addEventListener("keydown", e => {
-  if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) { e.preventDefault(); e.target.click(); }
-});
+for (const id of ["alumni-list", "people-grid"]) {
+  document.getElementById(id).addEventListener("click", e => {
+    const card = e.target.closest(".card"); if (!card) return;
+    if (card.dataset.site) window.open(card.dataset.site, "_blank", "noopener,noreferrer");
+    else openProfile(card.dataset.slug);
+  });
+  document.getElementById(id).addEventListener("keydown", e => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("card")) { e.preventDefault(); e.target.click(); }
+  });
+}
 document.addEventListener("click", e => {
   const m = e.target.closest("[data-more]"); if (!m) return;
   if (m.dataset.more === "people") { peopleLimit += 12; renderPeople(); } else { postsLimit += 10; renderPosts(); }
@@ -425,12 +519,13 @@ async function load() {
   if (tt.status === "fulfilled") tags = tt.value.items || [];
   if (ps.status === "fulfilled") posts = ps.value.items || [];
   if (pp.status !== "fulfilled" && ps.status !== "fulfilled") {
-    const retry = `<div class="state">技能墙暂时连不上。<button class="btn" data-retry>重试</button></div>`;
+    const retry = `<div class="state">校友墙暂时连不上。<button class="btn" data-retry>重试</button></div>`;
+    document.getElementById("alumni-list").innerHTML = retry;
     document.getElementById("people-grid").innerHTML = retry;
     document.getElementById("posts").innerHTML = retry;
     return;
   }
-  renderChips(); renderPeople(); renderPosts(); renderStats();
+  renderAlumni(); renderChips(); renderPeople(); renderPosts(); renderStats();
 }
 document.addEventListener("click", e => { if (e.target.closest("[data-retry]")) load(); });
 load();
