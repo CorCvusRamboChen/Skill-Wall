@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 import { q } from "../db.mjs";
 import { requireUser } from "../auth.mjs";
-import { str, tags, oneOf, bool, url, slugify, works, experiences, education } from "../validate.mjs";
+import { str, tags, oneOf, bool, url, slugify, works, experiences, education, highlights } from "../validate.mjs";
 
 export const TEMPLATES = ["cv", "gallery", "dev"];
 const me = new Hono();
@@ -38,7 +38,8 @@ me.put("/profile", async (c) => {
     about: str(raw.about, "content.about", { max: 600 }),
     works: works(raw.works, "content.works"),
     experiences: experiences(raw.experiences, "content.experiences"),
-    education: education(raw.education, "content.education")
+    education: education(raw.education, "content.education"),
+    highlights: highlights(raw.highlights, "content.highlights")
   };
   const published = bool(b.published, "published", true);
 

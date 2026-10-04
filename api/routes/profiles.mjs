@@ -14,14 +14,16 @@ const CARD = `
   p.template, p.site_url, p.links, p.updated_at,
   u.display_name, u.avatar_url, u.school, u.realm`;
 
-// The listing carries only the first work's image, in the same shape the
-// detail endpoint uses (content.works[0].image), so a card can show a cover
-// without every card shipping its whole portfolio.
+// The listing carries a trimmed `content`: the first work's image (same shape
+// the detail endpoint uses, content.works[0].image) and the highlights, so a
+// card can show a cover and its three proudest lines without every card
+// shipping a whole portfolio. jsonb_strip_nulls drops whichever is absent.
 const LIST_COVER = `
-  case when p.content #>> '{works,0,image}' is null then null
-       else jsonb_build_object('works', jsonb_build_array(
-              jsonb_build_object('image', p.content #>> '{works,0,image}')))
-  end as content`;
+  jsonb_strip_nulls(jsonb_build_object(
+    'works', case when p.content #>> '{works,0,image}' is null then null
+                  else jsonb_build_array(jsonb_build_object('image', p.content #>> '{works,0,image}')) end,
+    'highlights', p.content -> 'highlights'
+  )) as content`;
 
 profiles.get("/", async (c) => {
   const tag = str(c.req.query("tag"), "tag", { max: 24 });

@@ -110,3 +110,16 @@ export function education(v, field = "education") {
     period: str(e?.period, `${field}[${i}].period`, { max: 40 })
   }));
 }
+
+// "Highlights": the three things a person is proudest of — a hackathon win,
+// founding something, a prize. Short lines shown right under the name, so the
+// cap is tight on purpose.
+export function highlights(v, field = "highlights") {
+  if (v == null) return [];
+  if (!Array.isArray(v)) bad(field, "must be an array");
+  if (v.length > 3) bad(field, "max 3");
+  return v.map((h, i) => ({
+    text: str(h?.text, `${field}[${i}].text`, { max: 40, min: 1, required: true }),
+    url: url(h?.url, `${field}[${i}].url`)
+  }));
+}
