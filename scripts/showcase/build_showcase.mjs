@@ -110,6 +110,8 @@ for (const p of selection) {
 const users = manifest.map((m) => `  (${sql(m.userId)}, 'showcase', ${sql(m.qid)}, 'unimelb', ${sql(m.name)})`).join(",\n");
 const profiles = manifest.map((m) => {
   const content = { about: `${m.about}\n\n${aboutTail(m.shotDate)}`, works: [{ title: "官方个人网站", description: hostOf(m.site), url: m.site, image: m.coverUrl }] };
+  // Highlights come from the same sourced facts as the pitch; three at most.
+  if (Array.isArray(m.highlights) && m.highlights.length) content.highlights = m.highlights.slice(0, 3).map((text) => ({ text: String(text).slice(0, 40) }));
   // Where the card's facts come from — the article, or for people without one,
   // the page the education claim was read off.
   const links = [{ label: m.sourceLabel || "Wikipedia", url: m.source || m.wikipedia }].filter((l) => l.url);

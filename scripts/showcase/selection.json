@@ -13,7 +13,11 @@
     "about": "Patricia Piccinini，1965 年生，作品围绕生物伦理和后人类议题，以超写实的人兽混合体雕塑知名。1991 年在 VCA 取得绘画学士，2016 年获墨尔本大学 VCA 荣誉博士。",
     "wikipedia": "https://en.wikipedia.org/wiki/Patricia_Piccinini",
     "edu": "VCA 绘画",
-    "cohort": "1991 届"
+    "cohort": "1991 届",
+    "highlights": [
+      "2003 威尼斯双年展澳大利亚代表",
+      "2016 墨大 VCA 荣誉博士"
+    ]
   },
   {
     "qid": "Q1666908",
@@ -29,7 +33,11 @@
     "wikipedia": "https://en.wikipedia.org/wiki/Ricky_Swallow",
     "edu": "VCA 素描",
     "cohort": "1997 届",
-    "yearSource": "https://finearts.sydney/exhibitions/ricky-swallow-cv"
+    "yearSource": "https://finearts.sydney/exhibitions/ricky-swallow-cv",
+    "highlights": [
+      "2005 威尼斯双年展澳大利亚代表",
+      "1999 Contempora 5 奖"
+    ]
   },
   {
     "qid": "Q20850549",
@@ -45,7 +53,11 @@
     "about": "Sally Smart，1960 年生，用毛毡剪影、布面、丝网印和影像做大型装置，讨论性别与身份。此前在阿德莱德学过平面设计，2017 年任墨尔本大学校长学者。",
     "wikipedia": "https://en.wikipedia.org/wiki/Sally_Smart",
     "edu": "VCA 美术硕士",
-    "cohort": "1991 届"
+    "cohort": "1991 届",
+    "highlights": [
+      "2026 澳大利亚勋章 AM",
+      "2017 墨大校长学者"
+    ]
   },
   {
     "qid": "Q53068311",
@@ -61,7 +73,11 @@
     "wikipedia": "https://en.wikipedia.org/wiki/Yvette_Coppersmith",
     "edu": "VCA 绘画",
     "cohort": "2001 届",
-    "yearSource": "https://www.yvettecoppersmith.com/pagecv"
+    "yearSource": "https://www.yvettecoppersmith.com/pagecv",
+    "highlights": [
+      "2018 Archibald Prize",
+      "2003 首届 Metro 5 Art Prize"
+    ]
   },
   {
     "qid": "Q121085780",
@@ -77,7 +93,10 @@
     "about": "Ash Keating，1980 年生，创作跨绘画、行为、雕塑和影像。2004 年在莫纳什读完绘画学士，2006 年在 VCA 取得一等荣誉学士。",
     "wikipedia": "https://en.wikipedia.org/wiki/Ash_Keating",
     "edu": "VCA 绘画（荣誉）",
-    "cohort": "2006 届"
+    "cohort": "2006 届",
+    "highlights": [
+      "墨尔本多处大型户外壁画"
+    ]
   },
   {
     "qid": "Q134551693",
@@ -93,7 +112,8 @@
     "about": "Jacqui Stockdale，1968 年生，作品探讨面具、民俗、仪式与身份。1990 年 VCA 绘画学士，1993 年在塔斯马尼亚大学读完影像艺术研究生文凭。",
     "wikipedia": "https://en.wikipedia.org/wiki/Jacqui_Stockdale",
     "edu": "VCA 绘画",
-    "cohort": "1990 届"
+    "cohort": "1990 届",
+    "highlights": []
   },
   {
     "qid": "Q20856780",
@@ -109,7 +129,10 @@
     "about": "Jan Nelson，1955 年生于墨尔本，作品被澳大利亚国家美术馆、维多利亚国立美术馆等收藏。1983 年毕业于 VCA。",
     "wikipedia": "https://en.wikipedia.org/wiki/Jan_Nelson",
     "edu": "VCA",
-    "cohort": "1983 届"
+    "cohort": "1983 届",
+    "highlights": [
+      "作品入藏澳大利亚国家美术馆、NGV"
+    ]
   },
   {
     "qid": "Q5111928",
@@ -124,7 +147,10 @@
     "about": "Christopher Beaumont，1961 年生，作品被多家机构和企业收藏。1983 年墨尔本大学毕业，1987 年 VCA 绘画与雕塑学士。",
     "wikipedia": "https://en.wikipedia.org/wiki/Christopher_Beaumont",
     "edu": "VCA 绘画与雕塑",
-    "cohort": "1987 届"
+    "cohort": "1987 届",
+    "highlights": [
+      "1987 Hans and Sylvia Sumberg Prize"
+    ]
   },
   {
     "qid": "Q349248",
@@ -140,7 +166,11 @@
     "about": "Adam Elliot，墨尔本的独立动画导演，作品多取材于家人和朋友，悲喜交加。第一部短片《Uncle》就是 1996 年在 VCA 做的，后来有《Harvie Krumpet》《Mary and Max》等。",
     "wikipedia": "https://en.wikipedia.org/wiki/Adam_Elliot",
     "edu": "VCA 影视（动画）",
-    "cohort": "1996 届"
+    "cohort": "1996 届",
+    "highlights": [
+      "奥斯卡最佳动画短片《Harvie Krumpet》",
+      "《Mary and Max》导演"
+    ]
   },
   {
     "qid": "Q110514182",
@@ -156,7 +186,11 @@
     "about": "Emma Freeman，澳大利亚电视剧和电视电影导演，毕业于 VCA。作品包括 Glitch、The Newsreader（2021–2025）和 The Family Next Door（2025）。",
     "wikipedia": "https://en.wikipedia.org/wiki/Emma_Freeman",
     "edu": "VCA 影视",
-    "cohort": "毕业年份未公开"
+    "cohort": "毕业年份未公开",
+    "highlights": [
+      "2002 Tropfest 冠军，首位女性",
+      "《The Newsreader》导演"
+    ]
   },
   {
     "qid": "Q6304480",
@@ -172,7 +206,10 @@
     "about": "Judy Horacek，1961 年生，长期为 The Age、The Canberra Times 等报纸画漫画，出过十本漫画集。1991 年墨尔本大学文学士。",
     "wikipedia": "https://en.wikipedia.org/wiki/Judy_Horacek",
     "edu": "墨大 文学士",
-    "cohort": "1991 届"
+    "cohort": "1991 届",
+    "highlights": [
+      "《Where is the Green Sheep?》合著"
+    ]
   },
   {
     "qid": "Q16663540",
@@ -188,7 +225,11 @@
     "wikipedia": "https://en.wikipedia.org/wiki/Martin_Grant",
     "edu": "VCA 雕塑",
     "cohort": "1980 年代末就读",
-    "yearSource": "https://www.portrait.gov.au/portraits/2006.49/martin-grant"
+    "yearSource": "https://www.portrait.gov.au/portraits/2006.49/martin-grant",
+    "highlights": [
+      "NGV 2025 回顾展",
+      "为 Cate Blanchett 等设计"
+    ]
   },
   {
     "qid": "Q112174949",
@@ -203,7 +244,11 @@
     "about": "Simone LeAmon，设计师、艺术家、策展人和教育者，RMIT 兼职教授。1992 年毕业于 VCA。",
     "wikipedia": "https://en.wikipedia.org/wiki/Simone_LeAmon",
     "edu": "VCA 美术",
-    "cohort": "1992 届"
+    "cohort": "1992 届",
+    "highlights": [
+      "澳大利亚设计协会 CEO",
+      "NGV 首任当代设计策展人"
+    ]
   },
   {
     "source": "https://mag.alumni.unimelb.edu.au/simply-startups/",
@@ -220,7 +265,11 @@
     "pitch": "Canva 联合创始人、首席产品官。2002 年墨尔本大学法学加理学毕业，毕业后做平面设计师建网站，后来去 Google 做 Wave 的设计。",
     "about": "Cameron Adams，个人网站叫 The Man in Blue。读的是法律和计算机，毕业后开了自己的设计工作室，2007 年加入 Google，之后和 Melanie Perkins、Cliff Obrecht 一起做了 Canva。",
     "edu": "墨大 法学 + 理学",
-    "cohort": "2002 届"
+    "cohort": "2002 届",
+    "highlights": [
+      "Canva 联合创始人、首席产品官",
+      "Google Wave 设计师"
+    ]
   },
   {
     "qid": "Q7441037",
@@ -236,7 +285,11 @@
     "wikipedia": "https://en.wikipedia.org/wiki/Sean_Godsell",
     "edu": "墨大 建筑",
     "cohort": "1984 届",
-    "yearSource": "https://msd.unimelb.edu.au/alumni/alumni-profiles/sean-godsell"
+    "yearSource": "https://msd.unimelb.edu.au/alumni/alumni-profiles/sean-godsell",
+    "highlights": [
+      "1984 墨大一等荣誉毕业",
+      "Sean Godsell Architects 创始人"
+    ]
   },
   {
     "qid": "Q23796171",
@@ -251,7 +304,11 @@
     "about": "Michael Meszaros OAM，1945 年生于墨尔本。1960 年代在墨尔本大学学建筑，1968 年毕业。",
     "wikipedia": "https://en.wikipedia.org/wiki/Michael_Meszaros",
     "edu": "墨大 建筑",
-    "cohort": "1968 届"
+    "cohort": "1968 届",
+    "highlights": [
+      "FIDEM Grand Prix 2021",
+      "美国年度纪念章 2018"
+    ]
   },
   {
     "qid": "Q5930513",
@@ -266,7 +323,11 @@
     "about": "Hugh Davies，1971 年生。在 VCA 和哥本哈根技术学院受训，在澳大利亚广播公司工作期间获 2008 年 ATOM 奖。",
     "wikipedia": "https://en.wikipedia.org/wiki/Hugh_Davies_(artist)",
     "edu": "VCA",
-    "cohort": "1997–99 就读"
+    "cohort": "1997–99 就读",
+    "highlights": [
+      "2008 ATOM 奖",
+      "Analogue Art Map 创办人"
+    ]
   },
   {
     "qid": "Q6228383",
@@ -281,6 +342,7 @@
     "about": "John Dahlsen，澳大利亚当代环境艺术家，材料主要是澳洲海滩上的海洋塑料垃圾。1977–79 年就读 VCA，1989 年在墨尔本高等教育学院进修。",
     "wikipedia": "https://en.wikipedia.org/wiki/John_Dahlsen",
     "edu": "VCA",
-    "cohort": "1977–79 就读"
+    "cohort": "1977–79 就读",
+    "highlights": []
   }
 ]
