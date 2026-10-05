@@ -9,10 +9,14 @@ import { str, int } from "../validate.mjs";
 
 const profiles = new Hono();
 
+// has_portfolio: whether the visual portfolio (migration 0004, written by the
+// portfolio container) exists for this person — the walls turn the card into a
+// link to it when it does.
 const CARD = `
   p.user_id, p.slug, p.program, p.pitch, p.tags, p.open_to_team, p.open_to_friends,
   p.template, p.site_url, p.links, p.updated_at,
-  u.display_name, u.avatar_url, u.school, u.realm`;
+  u.display_name, u.avatar_url, u.school, u.realm,
+  exists (select 1 from portfolios pf where pf.user_id = p.user_id) as has_portfolio`;
 
 // The listing carries a trimmed `content`: the first work's image (same shape
 // the detail endpoint uses, content.works[0].image) and the highlights, so a

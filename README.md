@@ -40,6 +40,9 @@ JWT secret（或 JWKS）验签，首次见到就建一行 `users`。
 | GET | `/profiles?tag=&school=&open=1&q=&limit=&offset=` | 找人 |
 | GET | `/profiles/tags` | 标签云 |
 | GET | `/profiles/:slug` | 一张名片（含 content） |
+
+名片（列表和单张）都带 `has_portfolio`：这个人有没有可视化作品集（`../profolio`，迁移 0004 的
+`portfolios` 表，由作品集容器写、这里只读）。墙据此把名片做成直达 `/skillwall/portfolio/<slug>` 的跳转。
 | GET | `/posts?stage=&tag=&q=` | 招募帖（默认不含 closed） |
 | POST | `/posts` | 发帖：title, stage, commitment, description, tags, coverUrl(可选 http(s) 图片), roles[{name, needed}] |
 | GET | `/posts/:id` | 一帖 |
