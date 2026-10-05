@@ -364,6 +364,12 @@ function studyOf(p) {
   return { edu, cohort, year, badge, decade: year ? `${Math.floor(year / 10) * 10}s` : "年份不详" };
 }
 
+const WALL_HOST = { unimelb: "https://unimelbwall.com", monash: "https://monashwall.com" };
+const portfolioUrlFor = p => {
+  const school = String(p.school || "unimelb");
+  const origin = WALL_HOST[school] || `https://${school}.talkwalll.com`;
+  return `${origin}/skillwall/portfolio/${encodeURIComponent(p.slug)}?school=${encodeURIComponent(school)}`;
+};
 const hlHtml = p => {
   const hl = (p.content?.highlights || []).filter(h => h && h.text).slice(0, 3);
   return hl.length ? `<div class="hls">${hl.map(h => `<span class="hl">${esc(h.text)}</span>`).join("")}</div>` : "";
@@ -371,7 +377,8 @@ const hlHtml = p => {
 function cardHtml(p) {
   const name = p.display_name || "匿名";
   const color = colorFor(p.slug || name);
-  const site = isHttp(p.site_url) ? p.site_url : "";
+  // 没填自己网站但在墙里建了作品集的，名片直接跳作品集（墙的 /skillwall/portfolio/<slug>）。
+  const site = isHttp(p.site_url) ? p.site_url : (p.has_portfolio ? portfolioUrlFor(p) : "");
   const cover = isHttp(p.content?.works?.[0]?.image) ? p.content.works[0].image : "";
   const label = site ? `打开 ${name} 的网站` : `查看 ${name} 的作品集`;
   const alum = p.realm === "showcase" ? studyOf(p) : null;

@@ -12,9 +12,18 @@ async function loadProfile(userId) {
   return rows[0] || null;
 }
 
+// Whether the visual portfolio (migration 0004, written by the portfolio
+// container) exists for this person — the wall labels its button
+// 创建我的作品集 / 我的作品集 from this.
+async function hasPortfolio(userId) {
+  const { rows } = await q(`select exists (select 1 from portfolios where user_id = $1) as has`, [userId]);
+  return Boolean(rows[0]?.has);
+}
+
 me.get("/", async (c) => {
   const user = requireUser(c);
-  return c.json({ user, profile: await loadProfile(user.id) });
+  const [profile, has_portfolio] = await Promise.all([loadProfile(user.id), hasPortfolio(user.id)]);
+  return c.json({ user, profile, has_portfolio });
 });
 
 // Create-or-replace the name card. Slug is minted once from the display name
@@ -23,6 +32,9 @@ me.put("/profile", async (c) => {
   const user = requireUser(c);
   const b = await c.req.json().catch(() => ({}));
   const displayName = str(b.displayName, "displayName", { max: 40 });
+  // The wall's avatar lives in its own Supabase profile, not in the JWT, so the
+  // card form sends it along; an empty value leaves whatever we had.
+  const avatarUrl = url(b.avatarUrl, "avatarUrl");
   const program = str(b.program, "program", { max: 80 });
   const pitch = str(b.pitch, "pitch", { max: 200 });
   const skillTags = tags(b.tags);
@@ -44,6 +56,7 @@ me.put("/profile", async (c) => {
   const published = bool(b.published, "published", true);
 
   if (displayName) await q(`update users set display_name = $2 where id = $1`, [user.id, displayName]);
+  if (avatarUrl) await q(`update users set avatar_url = $2 where id = $1`, [user.id, avatarUrl]);
 
   const existing = await loadProfile(user.id);
   let slug = existing?.slug || null;
